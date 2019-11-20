@@ -546,3 +546,7 @@ def commentsby(request):
         return JsonResponse(result, safe=False)
     else:
         return render(request, 'blog/commentlist.html', {'comment_list': CB})
+
+def myconnection(request,id):
+    if id:
+        listcon= Requiest_list.objects.filter()

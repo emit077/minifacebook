@@ -77,3 +77,4 @@ class Requiest_list(models.Model):
     accept_date = models.DateTimeField(default=timezone.now())
 
 # class like(models.Model):
+
