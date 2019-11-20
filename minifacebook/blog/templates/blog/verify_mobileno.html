@@ -1,0 +1,76 @@
+{% extends 'blog/base.html' %}
+{% block containt %}
+<div class="content-section">
+    {% if  messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor%}
+    {% endif %}
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Enter OTP</legend>
+
+    </fieldset>
+    <form action="{% url 'blog-verify_mobile_number' %}" method="POST" onsubmit="return validate_this_otp()" name="OTPform">
+        {% csrf_token %}
+        <div class="container text-center" style="margin-left: 22%;">
+            <div class="form-group  text-center" style="width: 50%;">
+                <input type="text" class="form-control numbers_only" name="mobile" id="mobile"
+                    aria-describedby="mobHelpId" placeholder="Enter Mobile Number" maxlength="10" value="{{mobile_no}}"
+                    hidden>
+                <!-- <small id="mobHelpId" class="form-text " style="color: #ad3535;"></small> -->
+                <input type="text" class="form-control numbers_only text-center" maxlength="4" name="otp" id="otp"
+                    style="">
+                <small id="otpHelpId" class="form-text " style="color: #ad3535;"></small>
+                <button class="btn btn-outline-info" type="submit" onclick="validate_otp()">Submit
+                </button>
+            </div>
+        </div>
+    </form>
+    <p>
+        <a href="#" onclick="resendotp()" class="text-right">Resend OTP</a>
+    </p>
+</div>
+<script>
+    function validate_this_otp() {
+        var mobile = document.forms["OTPform"]["mobile"].value;
+        var otp = document.forms["OTPform"]["otp"].value;
+        // alert(otp);
+        $("#otpHelpId").text("")
+        if (mobile == null ||
+            mobile == undefined ||
+            mobile.length < 10) {
+            $("#otpHelpId").text("Please Enter a valid Mobile Number")
+            // alert("Please Enter a valid Mobile Number\n");
+            return false;
+        } if (otp == null ||
+            otp == undefined ||
+            otp.length < 4) {
+            $("#otpHelpId").text("invalid OTP")
+            return false;
+        }
+    }
+    $('.numbers_only').keyup(function () {
+        if (!this.value.match(/[0-9]/)) {
+            // alert(this.value);
+            this.value = this.value.replace(/[^0-9]/g, '');
+        }
+    });
+
+    function resendotp() {
+        mobile_no = $("#mobile").val();
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'blog-sentotp' %}",
+            data: { "mobile_no": mobile_no },
+            success: function (data) {
+                iziToast.info({
+                    position: 'topRight',
+                    message: "OTP Send Succesfully",
+                });
+            }
+        });
+    }
+
+</script>
+</div>
+{% endblock containt %}

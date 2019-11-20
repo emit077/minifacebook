@@ -1,0 +1,454 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'blog/css/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
+    <script src="{% static 'blog/js/ajax.js' %}"></script>
+
+    <style>
+        .jumbotron {
+            width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            padding: 5%;
+        }
+    </style>
+</head>
+
+<body id="newbody" style="background-color: #fff;;">
+    <!-- -----------------------------Nav Bar-------------------------------------- -->
+    <!-- {% if hide %}
+    {% else %} -->
+    <nav class="navbar navbar-expand-sm navbar-dark bg-dark" style="margin-bottom:20px">
+        <a class="navbar-brand" onclick="showProfile({{userid}})">{{username}}</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+            aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
+        <div class="collapse navbar-collapse" id="collapsibleNavId" style="position: absolute;right: 20px;">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <input type="Text" id="Searchinput" />
+                    <input type="button" id="searchbutton" value="Search" />
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" onclick="showrequest()">{{requests}}</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link btn" id="disply_textbox">Add Post</a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link btn" onclick="sharedToMe()">Shared To me</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'blog-delete' %}" class="nav-link">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <!-- {% endif %} -->
+    <!-- ----------------------------------body--------------------------------------------- -->
+    <!-- for search results -->
+    <div style="text-align:center;width:60%">
+        <div id="searchresult"
+            style="display: none; text-align:center; z-index: 2; position:  absolute;top:8%; left:30%; background-color: #e1dddd9b;  width: 40%; max-width: 25%; overflow-y: scroll;">
+        </div>
+    </div>
+    <!--  for a request list -->
+    <div id=" requestList" style="display: none">
+    </div>
+    <!--  for the add post -->
+    <div class="jumbotron jumbotron-fluid" style="display: none" id="text_note">
+        <form method="POST">
+            {% csrf_token %}
+            <textarea id="notes" cols="100" rows="5" name="notes" /></textarea></p>
+            <input type="button" class="btn btn-outline-info" value="POST" onclick="PostBlog()" />
+            <input type="button" class="btn btn-outline-warning" value="CANCEL" id="hide_textbox" />
+        </form>
+    </div>
+    <div id="showhere" style="z-index: 1;">
+
+        <!-- <button id="" class="btn btn-success" onclick="showhere()">Add notes</button> -->
+        {% if data  %}
+        {% for pi in data  %}
+        <section class="container" id="notes_container" style="background-color: aquamarine;padding-bottom:10px;">
+            <div class="container " style="width:100%">
+                <div class="card-block px-5"><br>
+                    <h6 class="card-title text-justify" style="text-decoration-line: underline;">
+                        {{pi.posted_by.name}}
+                    </h6>
+                    <p style="text-align:right">{{pi.posted_on}}</p>
+                    <hr style="border-top-color: #1d211a;">
+                    <div id="Update_{{pi.id}}" style="width: 90%;">
+                        <span id="notes_{{pi.id}}" class="card-text">{{pi.text}} </span>
+                        <div style="text-align-last: right" id="container_{{pi.id}}">
+                            <!-- <a href="" class="btn ">Read More</a> -->
+                            <!-- <a id="{{pi.id}}" class="btn btn-outline-primary" onclick="update_notes(this)">Update</a>
+                            <a id="delete_{{pi.id}}" class="btn btn-outline-danger"
+                                onclick="delete_notes(this)">Delete</a> -->
+
+                            <a id="comment_{{pi.id}}" class="btn btn-outline-primary"
+                                onclick="Comment({{pi.id}})">Comment</a>
+                            <a id="comment_{{pi.id}}" class="btn btn-outline-primary"
+                                onclick="CommentBy({{pi.id}})">Comments count</a>
+                            <a id="like_{{pi.id}}" class="btn btn-outline-primary"
+                                onclick="like_post({{pi.id}})">Like</a>
+                            <a id="like_{{pi.id}}" class="btn btn-outline-primary" onclick="likedby({{pi.id}})">like
+                                count</a>
+                            <!-- <a id="Share_{{pi.id}}" class="btn btn-outline-success"
+                                onclick="share_option(this)">Share</a> -->
+                        </div>
+                        <div id="addcomment_{{pi.id}}" style="text-align: right;">
+
+                        </div>
+                        <div id="showcomments_{{pi.id}}" style="text-align: right;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><br>
+        {% endfor %}
+        {% else %}
+        <div style="text-align-last: center;">
+            <h1 style="color: 0373e36e !important;"> No Notes Found </h1>
+        </div>
+        {% endif %}
+    </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("#disply_textbox").change(function () {
+                $("#searchaterm").val();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#disply_textbox").click(function () {
+                $("#text_note").show();
+                $("#searchresult").hide();
+                $("#showhere").hide();
+
+            });
+        });
+        $(document).ready(function () {
+            $("#hide_textbox").click(function () {
+                $("#text_note").hide();
+                $("#showhere").show();
+
+            });
+        });
+
+        function share_option(e) {
+            var ids = $(e).attr('id');
+            var nw = ids.split("_");
+            var id = nw[1];
+            // alert(id);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'blog-Share_option' %}",
+                data: { notes_id: id },
+                success: function (data) {
+                    // alert(data);
+                    $("#Update_" + id).html(data)
+                }
+            });
+        }
+
+        // function update_notes(e) {
+        //     var id = $(e).attr('id');
+        //     var str = $("#notes_" + id).text();
+        //     // alert(id);
+        //     // alert(str);
+        //     $("#Update_" + id).empty();
+        //     $("#Update_" + id).html('<textarea  type="text" id="notes_' + id + '" cols="100" rows="5" name="notes" value="' + str + '"> ' + str + '</textarea>' + '<br>' + '<input type="button" value="Submit" id="btn_' + id + '" onclick="PostBlogUpload(this)" />');
+        //     $("#_" + id).hide();
+        //     $("#delete_" + id).hide();
+
+        // }
+        // function delete_notes(e) {
+        //     var ids = $(e).attr('id');
+        //     // alert(ids);
+        //     var nw = ids.split("_");
+        //     var id = nw[1];
+        //     // alert(id);
+        //     $.ajax({
+        //         type: 'GET',
+        //         url: "{% url 'blog-Delete_notes' %}",
+        //         data: { id: id },
+        //         success: function (data) {
+        //             // alert("Deleted");
+        //             $("#showhere").html(data)
+        //         }
+        //     });
+        // }
+
+        function Comment(id) {
+            // alert(id);
+            $("#addcomment_" + id).html('<textarea  type="text" id="newcomment_' + id + '" cols="70%" name="notes"> </textarea>' + '<br>' + '<input type="button" value="Submit" id="btn_' + id + '" onclick="savecomment(this)"class="btn btn-outline-info" />');
+            $("#container_" + id).hide();
+            // $("#delete_" + id).hide();
+        }
+        function like_post(id) {
+            console.log(id);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'blog-like_post' %}",
+                data: { id: id },
+                success: function (data) {
+                    alert(data);
+                    // $("#showhere").html(data)
+                }
+            });
+
+        }
+
+
+
+
+        function PostBlog() {
+            // var title = $('#title').val();
+            var notes = $('#notes').val();
+            $('#notes').val("");
+            // alert(notes);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-Save_notes' %}",
+                data: { 'notes': notes, 'type': "text" },
+                success: function (data) {
+                    $("#showhere").html(data);
+                    $("#showhere").show();
+                    $("#text_note").hide();
+
+                    //alert(data);
+                }
+            });
+        }
+        // function PostBlogUpload(e) {
+        //     // var title = $('#title').val();
+        //     var ids = $(e).attr('id');
+        //     var nw = ids.split("_");
+        //     var id = nw[1];
+        //     // alert(id);
+        //     var notes = $('#notes_' + id).val();
+        //     // alert(title);
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "{% url 'blog-Update_notes' %}",
+        //         data: { 'id': id, 'notes': notes },
+        //         success: function (data) {
+        //             // alert(data);
+        //             $("#showhere").html(data);
+
+        //         }
+        //     });
+        // }
+        function sharedToMe() {
+            // alert("sharedto me");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-SharedToMe' %}",
+                success: function (data) {
+                    // alert(data);
+                    $("#showhere").html(data);
+                }
+            });
+        }
+        function myNotes() {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-Share' %}",
+                success: function (data) {
+                    // alert(data);
+                    $("#showhere").html(data);
+                }
+            });
+        }
+        function logout() {
+            // alert("sharedto me");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-delete' %}",
+                success: function (data) {
+                    // alert(data);
+                    $("#newbody").html(data);
+                }
+            });
+        }
+
+        function likedby(id) {
+            // alert(id);
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-likedby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    alert(data);
+                    $("#searchresult").html(data);
+                    $("#searchresult").show();
+                }
+            });
+
+        }
+        function CommentBy(id) {
+            // alert(id);
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-commentsby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    alert(data);
+                    $("#showcomments_" + id).html(data);
+                    $("#showcomments_" + id).show();
+                }
+            });
+
+        }
+
+
+        // $("#Searchinput").on("change", function () {
+        //     var searchTerm = $("#Searchinput").val();
+        //     alert(searchTerm);
+        //     $("#searchresult").show();
+        //     $("#searchresult").val("Searching....");
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "{% url 'blog-SearchUser' %}",
+        //         data: { 'searchTerm': searchTerm },
+        //         success: function (data) {
+        //             alert(data);
+        //             $("#searchresult").html(data);
+        //         }
+        //     });
+        // });
+
+
+        function savecomment(e) {
+            // var title = $('#title').val();
+            var ids = $(e).attr('id');
+            var nw = ids.split("_");
+            var id = nw[1];
+            var iserror = false;
+            var newcomment = $('#newcomment_' + id).val();
+            if ((newcomment == undefined) || (newcomment = "") || (newcomment = null)) {
+                iserror = true;
+            }
+            // alert(title);
+            if (iserror == false) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-comment_save' %}",
+                    data: { 'id': id, 'newcomment': newcomment },
+                    success: function (data) {
+                        alert(" comment saved");
+                        $("#showhere").html(data);
+                        $("#addcomment_" + id).show();
+                        $("#container" + id).show();
+
+                    }
+                });
+            }
+        }
+
+        $(document).ready(function () {
+            $("#searchbutton").click(function () {
+                var searchTerm = $("#Searchinput").val();
+                var iserror = false;
+                //     if ((searchTerm == undefined) || searchTerm == null)) {
+                //     iserror = true;
+                // }
+                if (iserror == false) {
+                    $("#searchresult").show();
+                    $("#searchresult").val("Searching....");
+                    $.ajax({
+                        type: "GET",
+                        url: "{% url 'blog-SearchUser' %}",
+                        data: { 'searchTerm': searchTerm },
+                        success: function (data) {
+                            // alert(data);
+
+                            $("#searchresult").html(data);
+                        }
+                    });
+                }
+            });
+        });
+
+
+        function showProfile(id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-userprofile' %}",
+                data: { 'id': id },
+                success: function (data) {
+                    $("#searchresult").hide();
+                    $("#showhere").html(data);
+                }
+            });
+        }
+
+
+        function showrequest() {
+            // alert("data");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-conrequiestList' %}",
+                // data:{ 'id': id },
+                success: function (data) {
+                    // alert(data);
+                    $("#searchresult").show();
+                    $("#searchresult").html(data);
+                }
+            });
+        }
+
+
+
+        // function myrequests(){
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "{% url 'blog-conrequiestList' %}",
+        //         // data:{ 'id': id },
+        //         success: function (data) {
+        //             $("#requestList")show();
+        //               $("#requestList").html(data);
+        //         }
+        //     });
+        // }
+
+        function accepted(id) {
+            alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "accept" },
+                success: function (data) {
+                    // alert(data);
+                    $("#requestList").show();
+                    $("#requestList").html(data);
+                }
+            });
+        }
+
+        function reject(id) {
+            alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "reject" },
+                success: function (data) {
+                    // alert(data);
+                    $("#requestList").show();
+                    $("#requestList").html(data);
+                }
+            });
+        }
+
+    </script>
+</body>
+
+</html>

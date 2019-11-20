@@ -1,0 +1,10 @@
+{% for item  in LB  %}
+<div id="mydiv_{{item.id}}" class="content" style="background-color: aliceblue;">
+	<div class="media">
+		<div class="media-body"><br>
+			<a href="#" onclick="userprofile({{item.liked_by.id}})" style="font-size: 12px;">{{ item.liked_by.name}}</a>
+		</div>
+	</div>
+</div>
+<hr>
+{% endfor  %}

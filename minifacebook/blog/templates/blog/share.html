@@ -1,0 +1,501 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="{% static 'blog/css/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/iziToast.min.css' %}">
+    <script src="{% static 'blog/js/ajax.js' %}"></script>
+    <script src="{% static 'blog/js/iziToast.min.js' %}"></script>
+    <!-- cdn for toasts -->
+
+
+    <style>
+        .jumbotron {
+            width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            padding: 5%;
+        }
+
+        a {
+            color: #29487d;
+        }
+    </style>
+</head>
+
+<body id="newbody" style="background-color: #e9ebee;">
+
+    <!-- -----------------------------Nav Bar-------------------------------------- -->
+    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #5f788a; "> -->
+    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d ">
+        <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#"> <span class="sr-only">{{username}}</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="logout()"> Logout</a>
+                </li>
+            </ul>
+            <input class="form-control mr-sm-2" type="text" id="Searchinput" placeholder="Search"
+                style="width: 15%;display: inline-block;">
+            <button class="btn btn-outline-light my-2 my-sm-0" id="searchbutton">Search</button>
+        </div>
+    </nav>
+    <!-- ----------------------------------body--------------------------------------------- -->
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-8 mt-2" id="mainbody">
+
+                <!-- <button id="" class="btn btn-success" onclick="showhere()">Add notes</button> -->
+
+
+                <article class="media content-section ">
+                    <div class="media-body">
+                        <div class=" row">
+                            <div class="col-sm-1">
+                                <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg'%}"
+                                    style="width: 60px;height: 60px;">
+                            </div>
+                            <div class="col-sm-10 pt-3 ml-4">
+                                <textarea name="notes" id="notes" cols="" rows="1"
+                                    placeholder="What's on your mind , {{ request.session.name }}?"
+                                    style="border: none;font-size:1.2rem;width:100%"></textarea>
+                                <input id="postbtn" type="button " class="btn btn-outline-primary p-0" value="POST"
+                                    onclick="PostBlog()" style=" display:none; width: 100%;" />
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                {% if  messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endfor%}
+                {% endif %}
+                {% if data  %}
+                {% for pi in data  %}
+                <article class="media content-section">
+                    <div class="media-body">
+                        <div class="article-metadata">
+                            <div class="media">
+                                <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg'%}"
+                                    style="width: 60px;height: 60px;">
+                                <div class="media-body">
+                                    <a class="mr-5" href="#" style="font-size: 1.7rem;"
+                                        onclick="userprofile({{pi.posted_by.id}})">
+                                        {{ pi.posted_by.name}}
+                                    </a><br>
+                                    <small class="text-muted">{{ pi.posted_on|date:"F d, Y" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="article-content">{{ pi.text }}</p>
+
+                        <div class="container">
+                            <div class=" row text-muted " style="border-top: solid 1px lightgray; padding-top: 5px;">
+                                <div class="col-sm-6 text-left">
+                                    <button type="button" class="btn" data-toggle="modal" data-target="#modelId"
+                                        onclick="likedby({{pi.id}})" style="font-size:10px;">
+                                        {{pi.likes_count}} Like
+                                    </button>
+                                </div>
+
+
+
+                                <div class="col-sm-6 text-right">
+                                    <button class="btn" href="#" style="font-size:10px;"
+                                        onclick="CommentBy({{pi.id}})">{{pi.comments_count}} Comment</button>
+                                </div>
+                            </div>
+                            <div class=" row text-center"
+                                style="border-top: solid 1px lightgray; padding-top: 5px;border-bottom: solid 1px lightgray; padding-bottom: 5px;">
+                                <div class="col-sm-6">
+                                    {% if pi.id in listliked  %}
+                                    <button class=" btn btn-outline-light" style="width: 100%;">
+                                        <img src="{% static 'blog/media/icon-like-blue.png' %}"
+                                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                            alt="not fond">
+                                    </button>
+                                    {% else %}
+                                    <button class=" btn btn-outline-light" style="width: 100%;"
+                                        onclick="like_post({{pi.id}})">
+                                        <img src="{% static 'blog/media/icon-like-gray.png' %}"
+                                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                            alt="not fond">
+                                    </button>
+                                    {% endif %}
+
+                                    </button>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button class=" btn btn-outline-light" style="width: 100%;"
+                                        onclick="changefocus({{pi.id}})">
+                                        <img src="{% static 'blog/media/icon-comment.png' %}"
+                                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                            alt="not fond">
+                                    </button>
+                                </div>
+
+                            </div>
+                        </div>
+                        <br>
+                        <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}"
+                            placeholder="Add Comment" style="width:80%; display: inline-block;">
+                        <button id="{{pi.id}}" class="btn btn-outline-primary my-2 my-sm-0"
+                            onclick="savecomment(this)">Comment</button>
+                        <small id="commentHelpId" class="form-text   " style="color: #ad3535;"></small>
+                        <div class="container" id="showcomments_{{pi.id}}">
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+                {% else %}
+                <div style="text-align-last: center;">
+                    <h4 style="color: 0373e36e !important;"> No post yet write a post </h4>
+
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-md-4 mt-2">
+                <div class="content-section">
+                    <div class="media">
+                        {% if profile_data.image %}
+                        <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
+                            style="width:60px;height:60px;">
+                        {% else %}
+                        <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
+                            style="width:60px;height:60px;">
+                        {% endif %}
+                        <div class="media-body pt-2">
+                            <h2><a
+                                    href="{% url 'blog-userprofile' request.session.name request.session.userid %}">{{ request.session.name }}</a>
+                                <!-- <h2><a href="#" onclick="userprofile({{ request.session.userid }})">{{ request.session.name }}</a>  -->
+                            </h2>
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        <p class='text-muted'>
+                            <li class="list-group-item list-group-item-light">
+                                <a class="nav-link" href="#" onclick="showrequest()">Friend Request
+                                    {{ request.session.recount }}</a>
+                            </li>
+                            <li class="list-group-item list-group-item-light">
+                                <a class="nav-link" href="#" onclick="myfriends()">My Friends
+                                </a>
+                            </li>
+                            <!-- <li class="list-group-item list-group-item-light">Calendars</li>
+                            <li class="list-group-item list-group-item-light">etc</li> -->
+                        </p>
+                        <!-- <small id="PostHelpId" class="form-text   " style="color: #ad3535;"></small>
+                        <textarea id="notes" cols="auto" rows="5" name="notes" /
+                            placeholder=" Write Something to Post  "></textarea>
+                        <input type="button" class="btn btn-outline-info" value="POST" onclick="PostBlog()" /> -->
+                    </ul>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+
+
+    <!-- for search results -->
+    <div style="text-align:center;width:60%; ">
+        <div id="searchresult"
+            style="display: none; text-align:center; z-index: 2; position:  absolute;top: 9%; right:0%; background-color: #e1dddd9b;  width: 40%; max-width: 21%;max-height: 50%; overflow-y: scroll; border: solid 1px #e1dddd9b;">
+        </div>
+    </div>
+    <!--  for a request list -->
+    <div id=" requestList" style="display: none">
+    </div>
+    <div id="showhere" style="z-index: 1;">
+    </div>
+    <script>
+        //   on focuse show rhe i post button 
+        $("#notes").focus(function () {
+            $("#postbtn").show();
+        });
+        // $("#notes").focusout(function () {
+        //     $("#postbtn").hide();
+        // });
+
+        function changefocus(id) {
+            // alert("chnagefocus");
+            $("#newcomment_" + id).focus();
+        }
+
+
+        $(document).ready(function () {
+            $("#disply_textbox").change(function () {
+                $("#searchaterm").val();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#disply_textbox").click(function () {
+                $("#text_note").show();
+                $("#searchresult").hide();
+                $("#showhere").hide();
+
+            });
+        });
+        $(document).ready(function () {
+            $("#hide_textbox").click(function () {
+                $("#text_note").hide();
+                $("#showhere").show();
+
+            });
+        });
+
+
+        function like_post(id) {
+
+            console.log(id);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'blog-like_post' %}",
+                data: { id: id },
+                success: function (data) {
+                    iziToast.info({
+                        // title: 'Caution',
+                        message: data,
+                    });
+                }
+            });
+
+        }
+        function PostBlog() {
+            // var title = $('#title').val();
+            //   alert('notes');
+            var notes = $('#notes').val();
+            if (notes == null || notes == "" ||
+                notes == undefined ||
+                notes.length == 0) {
+                $("#PostHelpId").text("Please Enter Something To Post")
+                return false;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-Save_notes' %}",
+                data: { 'notes': notes, 'type': "text" },
+                success: function (data) {
+                    $('#notes').val("");
+                    $("#newbody").html(data);
+                }
+            });
+        }
+        function logout() {
+            // alert("sharedto me");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-delete' %}",
+                success: function (data) {
+                    // alert(data);
+                    $("#newbody").html(data);
+                }
+            });
+        }
+
+        function likedby(id) {
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-likedby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    //$("#showcomments_" + id).html(data);
+                    $("#modal-container-list").html(data);
+
+                }
+            });
+        }
+        function CommentBy(id) {
+            // alert(id);
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-commentsby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    // alert(data);
+                    $("#showcomments_" + id).html(data);
+                    $("#showcomments_" + id).show();
+                }
+            });
+
+        }
+        function savecomment(e) {
+            // var title = $('#title').val();
+            console.log("hello this is the comment save");
+            console.log(e);
+            var id = $(e).attr('id');
+            // var nw = ids.split("_");
+            // var id = nw[1];
+            var iserror = false;
+            var newcomment = $('#newcomment_' + id).val();
+            if (newcomment == null ||
+                newcomment == undefined ||
+                newcomment.length == 0) {
+                $("#commentHelpId").text("Please Something to Commment")
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-comment_save' %}",
+                data: { 'id': id, 'newcomment': newcomment },
+                success: function (data) {
+                    // alert(data);
+                    $("#showcomments_" + id).html(data)
+                    $('#newcomment_' + id).val("");
+                    iziToast.success({
+                        message: "comment saved",
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#searchbutton").click(function () {
+                var searchTerm = $("#Searchinput").val();
+                $("#searchresult").show();
+                $("#searchresult").val("Searching....");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-SearchUser' %}",
+                    data: { 'searchTerm': searchTerm },
+                    success: function (data) {
+                        // alert(data);
+                        $("#searchresult").html(data);
+                    }
+                });
+            });
+        });
+
+        function userprofile(id) {
+            // alert(id);
+            console.log(id);
+            $.ajax({
+                type: "GET",
+                data: { 'id': id, },
+                success: function (data) {
+                    // alert(data);
+                    $("#searchresult").hide();
+                    $("#mainbody").html(data);
+                }
+            });
+
+        }
+
+        function closelist() {
+            $("#searchresult").hide();
+        }
+
+        function showrequest() {
+            // alert("data");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-conrequiestList' %}",
+                // data:{ 'id': id },
+                success: function (data) {
+                    // alert(data);
+                    // $("#searchresult").show();
+                    $("#mainbody").html(data);
+                }
+            });
+        }
+        function myfriends() {
+            // alert("data");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-friendlist' %}",
+                // data:{ 'id': id },
+                success: function (data) {
+
+                    $("#mainbody").html(data);
+                }
+            });
+        }
+        function accepted(id) {
+            // alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "accept", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).hide();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+        function reject(id) {
+            // alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "reject", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).hide();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+
+        // function dashboard() {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: "{% url 'blog-user_post' %}",
+        //         success: function (data) {
+        //             $("#mainbody").html(data);
+        //         }
+        //     });
+        // }
+    </script>
+</body>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+<!-- Button trigger modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-container-list">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

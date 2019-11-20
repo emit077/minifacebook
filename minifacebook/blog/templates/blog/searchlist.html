@@ -1,0 +1,17 @@
+{% if data  %}
+<div class="card text-left" style="padding: 5px;">
+    <div style="text-align:right">
+        <button class="btn" onclick="closelist()">X</button>
+    </div>
+    {% for item  in data  %}
+    <!-- <div class="card text-left" style="padding: 5px;"></div> -->
+    <a href="{% url 'blog-userprofile' item.name item.id  %}">
+        <p class="card-title">{{item.name}}</p>
+        <!-- </div> -->
+        {% endfor %}
+</div>
+{% else %}
+<div style="text-align-last: center;">
+    <p class="text-muted">  not found </>
+</div>
+{% endif %}

@@ -1,0 +1,356 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="{% static 'blog/css/main.css'  %}">
+    <link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
+    <link rel="stylesheet" href="{% static 'blog/css/iziToast.min.css' %}">
+    <script src="{% static 'blog/js/ajax.js' %}"></script>
+    <script src="{% static 'blog/js/iziToast.min.js' %}"></script>
+    <!-- cdn for toasts -->
+
+
+    <style>
+        .jumbotron {
+            width: 80%;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            padding: 5%;
+        }
+
+        a {
+            color: #29487d;
+        }
+    </style>
+</head>
+
+<body id="newbody" style="background-color: #e9ebee;">
+
+    <!-- -----------------------------Nav Bar-------------------------------------- -->
+    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #5f788a; "> -->
+    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d ">
+        <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#"> <span class="sr-only">{{username}}</span></a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'blog-delete' %}"> Logout</a>
+                </li>
+            </ul>
+            <input class="form-control mr-sm-2" type="text" id="Searchinput" placeholder="Search"
+                style="width: 15%;display: inline-block;">
+            <button class="btn btn-outline-light my-2 my-sm-0" id="searchbutton">Search</button>
+        </div>
+    </nav>
+    <!-- ----------------------------------body--------------------------------------------- -->
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-md-8 mt-2" id="mainbody">
+
+                {% block base2 %}
+                {% endblock base2 %}
+
+            </div>
+            <div class="col-md-4 mt-2">
+                <div class="content-section">
+                    <div class="media">
+                        {% if profile_data.image %}
+                        <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
+                            style="width:60px;height:60px;">
+                        {% else %}
+                        <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
+                            style="width:60px;height:60px;">
+                        {% endif %}
+                        <div class="media-body pt-2">
+                            <h2><a
+                                    href="{% url 'blog-userprofile' request.session.name request.session.userid %}">{{ request.session.name }}</a>
+                                <!-- <h2><a href="#" onclick="userprofile({{ request.session.userid }})">{{ request.session.name }}</a>  -->
+                            </h2>
+                        </div>
+                    </div>
+                    <ul class="list-group">
+                        <p class='text-muted'>
+                            <li class="list-group-item list-group-item-light">
+                                <a class="nav-link" href="#" onclick="showrequest()">Friend Request
+                                    {{ request.session.recount }}</a>
+                            </li>
+                            <li class="list-group-item list-group-item-light">
+                                <a class="nav-link" href="#" onclick="myfriends()">My Friends
+                                </a>
+                            </li>
+                            <!-- <li class="list-group-item list-group-item-light">Calendars</li>
+                            <li class="list-group-item list-group-item-light">etc</li> -->
+                        </p>
+                        <!-- <small id="PostHelpId" class="form-text   " style="color: #ad3535;"></small>
+                        <textarea id="notes" cols="auto" rows="5" name="notes" /
+                            placeholder=" Write Something to Post  "></textarea>
+                        <input type="button" class="btn btn-outline-info" value="POST" onclick="PostBlog()" /> -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+
+
+    <!-- for search results -->
+    <div style="text-align:center;width:60%; ">
+        <div id="searchresult"
+            style="display: none; text-align:center; z-index: 2; position:  absolute;top: 9%; right:0%; background-color: #e1dddd9b;  width: 40%; max-width: 21%;max-height: 50%; overflow-y: scroll; border: solid 1px #e1dddd9b;">
+        </div>
+    </div>
+    <!--  for a request list -->
+    <div id=" requestList" style="display: none">
+    </div>
+    <div id="showhere" style="z-index: 1;">
+    </div>
+    <script>
+        //   on focuse show rhe i post button 
+        $("#notes").focus(function () {
+            $("#postbtn").show();
+        });
+        // $("#notes").focusout(function () {
+        //     $("#postbtn").hide();
+        // });
+
+        function changefocus(id) {
+            // alert("chnagefocus");
+            $("#newcomment_" + id).focus();
+        }
+
+
+        $(document).ready(function () {
+            $("#disply_textbox").change(function () {
+                $("#searchaterm").val();
+            });
+        });
+
+        $(document).ready(function () {
+            $("#disply_textbox").click(function () {
+                $("#text_note").show();
+                $("#searchresult").hide();
+                $("#showhere").hide();
+
+            });
+        });
+        $(document).ready(function () {
+            $("#hide_textbox").click(function () {
+                $("#text_note").hide();
+                $("#showhere").show();
+
+            });
+        });
+
+
+        function like_post(id) {
+
+            console.log(id);
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'blog-like_post' %}",
+                data: { id: id },
+                success: function (data) {
+                    iziToast.info({
+                        // title: 'Caution',
+                        message: data,
+                    });
+                }
+            });
+
+        }
+        function PostBlog() {
+            // var title = $('#title').val();
+            //   alert('notes');
+            var notes = $('#notes').val();
+            if (notes == null || notes == "" ||
+                notes == undefined ||
+                notes.length == 0) {
+                $("#PostHelpId").text("Please Enter Something To Post")
+                return false;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-Save_notes' %}",
+                data: { 'notes': notes, 'type': "text" },
+                success: function (data) {
+                    $('#notes').val("");
+                    $("#newbody").html(data);
+                }
+            });
+        }
+        function logout() {
+            // alert("sharedto me");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-delete' %}",
+                success: function (data) {
+                    // alert(data);
+                    $("#newbody").html(data);
+                }
+            });
+        }
+
+        function likedby(id) {
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-likedby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    $("#showcomments_" + id).html(data);
+                }
+            });
+        }
+        function CommentBy(id) {
+            // alert(id);
+            console.log("here");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-commentsby' %}",
+                data: { 'id': id, },
+                success: function (data) {
+                    // alert(data);
+                    $("#showcomments_" + id).html(data);
+                    $("#showcomments_" + id).show();
+                }
+            });
+
+        }
+        function savecomment(e) {
+            // var title = $('#title').val();
+            console.log("hello this is the comment save");
+            console.log(e);
+            var id = $(e).attr('id');
+            // var nw = ids.split("_");
+            // var id = nw[1];
+            var iserror = false;
+            var newcomment = $('#newcomment_' + id).val();
+            if (newcomment == null ||
+                newcomment == undefined ||
+                newcomment.length == 0) {
+                $("#commentHelpId").text("Please Something to Commment")
+                return false;
+            }
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-comment_save' %}",
+                data: { 'id': id, 'newcomment': newcomment },
+                success: function (data) {
+                    // alert(data);
+                    $("#showcomments_" + id).html(data)
+                    $('#newcomment_' + id).val("");
+                    iziToast.success({
+                        message: "comment saved",
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#searchbutton").click(function () {
+                var searchTerm = $("#Searchinput").val();
+                $("#searchresult").show();
+                $("#searchresult").val("Searching....");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-SearchUser' %}",
+                    data: { 'searchTerm': searchTerm },
+                    success: function (data) {
+                        // alert(data);
+                        $("#searchresult").html(data);
+                    }
+                });
+            });
+        });
+
+        function userprofile(id) {
+            // alert(id);
+            console.log(id);
+            $.ajax({
+                type: "GET",
+                data: { 'id': id, },
+                success: function (data) {
+                    // alert(data);
+                    $("#searchresult").hide();
+                    $("#mainbody").html(data);
+                }
+            });
+
+        }
+
+        function closelist() {
+            $("#searchresult").hide();
+        }
+
+        function showrequest() {
+            // alert("data");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-conrequiestList' %}",
+                // data:{ 'id': id },
+                success: function (data) {
+                    // alert(data);
+                    // $("#searchresult").show();
+                    $("#mainbody").html(data);
+                }
+            });
+        }
+        function myfriends() {
+            // alert("data");
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-friendlist' %}",
+                // data:{ 'id': id },
+                success: function (data) {
+
+                    $("#mainbody").html(data);
+                }
+            });
+        }
+        function accepted(id) {
+            // alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "accept", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).hide();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+        function reject(id) {
+            // alert(id);
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "reject", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).hide();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

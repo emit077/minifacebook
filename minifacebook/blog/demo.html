@@ -1,0 +1,202 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="https://fonts.googleapis.com/css?family=Fredericka+the+Great&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Finger+Paint&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="{% static 'blog/css/main.css'  %}">
+	<link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
+	<link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
+	<script src="{% static 'blog/js/jquery.min.js' %}"></script>
+	<script src="{% static 'blog/js/jquery.min.js' %}"></script>
+	<style>
+		html {
+			scroll-behavior: smooth;
+		}
+
+		.jumbotron {
+			width: 40%;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			background-color: #070a095b;
+		}
+
+		.btn {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.abc {
+			color: blue;
+			font-size: 18px;
+			text-decoration: underline;
+		}
+
+		.image_container {
+			top: -700px;
+		}
+
+		.head {
+			font-family: 'Fredericka the Great', cursive;
+			font-size: 80px;
+			text-align: center;
+			color: aqua;
+			padding: 10px;
+			padding-top: 60px;
+
+		}
+
+		lable {
+			color: rgb(153, 155, 156);
+		}
+		 error{
+			  font-size: 7px;
+				color: red;
+		 }
+	</style>
+
+</head>
+
+<body id="">
+	<div style=" background-color;" class="">
+		<div class="image_container">
+			<img src="{% static 'blog/media/bg.jpg'  %}" alt="Avatar" class="overlay_image">
+			<div class="image_overlay">
+				<section id="loginform" class="jumbotron " style="align-content: center; margin-top: 70px;">
+					<h1 class="display-3">Login
+						<span class="lead" style="font-size: 14px;">or</span>
+						<span class="lead abc" id="register">Register</span>
+					</h1>
+					<hr class="my-2">
+					<form method="POST" action="{% url 'blog-Login' %}">
+						{% csrf_token %}
+						<div class="form-group">
+							<label for="mobile_no">Contact no</label>
+							<input type="text" class="form-control" name="mobile_no" id="mobile_no"
+								placeholder="0123456789" minlength="10" maxlength="10">
+						</div>
+						<div class="form-group">
+							<label for="Password">Password</label>
+							<input type="password" class="form-control" name="password" id="password"
+								placeholder="*********">
+						</div>
+						<button type="submit" class="btn btn-primary">Submit</button>
+					</form>
+					<div id="showhere"></div>
+				</section>
+				<section id="registrationform" class="jumbotron"
+					style="background-color: rgba(22, 22, 28, 0.4);display: none;">
+					<h1 class="display-3">Register
+						<span class="lead" style="font-size: 14px;">or</span>
+						<span class="lead abc" id="login">Login</span>
+					</h1>
+					<hr class="my-2">
+					<!-- <form method="POST" action=""> -->
+					{% csrf_token %}
+					<div class="form-group">
+						<label for="name">Name</label>
+						<input type="TEXT" class="form-control" name="name" id="name" placeholder="Enter your name">
+						<label for="name" class="error name_error"></label>
+					</div>
+					<!-- <div class="form-group">
+						<label for="name">Gender</label>
+						<select class="form-control" name="gender" id="gender">
+							<option value="">Select</option>
+							<option value="1">Male</option>
+							<option value="2">Female</option>
+							<option value="3">Other</option>
+						</select>
+					</div> -->
+					<div class="form-group">
+						<label for="mobile_no">Contact no</label>
+						<input type="number" class="form-control" name="mobile_no" id="mobile_no"
+							placeholder="0123456789" minlength="10" maxlength="10">
+								<label for="name" class="error mob_error"></label>
+					</div>
+					<div class="form-group">
+						<label for="Password">Password</label>
+						<input type="password" class="form-control" name="password" id="password"
+							placeholder="*********">
+							<label for="name" class="error pass_error"></label>
+					</div>
+					<div class="form-group">
+						<label for="Password">Confirm Password</label>
+						<input type="password" class="form-control" name="password2" id="password2"
+							placeholder="*********">
+					</div>
+					<button type="submit" class="btn btn-primary" onclick="registrationData()">Submit</button>
+					<!-- </form> -->
+				</section>
+			</div>
+		</div>
+
+
+		<script>
+			$(document).ready(function () {
+				$("#login").click(function () {
+					$("#registrationform").hide();
+					$("#loginform").show();
+				});
+				$("#register").click(function () {
+					$("#loginform").hide();
+					$("#registrationform").show();
+				});
+			});
+
+			function registrationData() {
+				var iserror = false;
+				var name = $('#name').val();
+				if ((name = "") || (name = null) || (name = undefined)) {
+					// iserror = true;
+					$('.name_error').text("Please Enter Name");
+					// alert("Please Enter Your Name");
+				}
+
+				// var gender=$('#gender');
+				// //  alert(gender);
+				// if((gender="")||(gender=null)||(gender=undefined)){
+				// 	iserror=true;
+				// 	alert(gender);
+				// 	alert("Please Select  your Gender");
+				// }
+
+
+				var mobile_no = $('#mobile_no').val();//mobile no validation
+				if ((mobile_no = "") || (mobile_no = null) || (mobile_no = undefined)) {
+					iserror = true;
+					pass_error
+					$('.mob_error').text("Please Enter Your mobile_no");
+					// alert("Please Enter Your mobile_no");
+				}
+				var password = $('#password').val();
+				var password2 = $('#password2').val();
+				if (((password = "") || (password = null) || (password = undefined)) && (password == password2)) {
+					iserror = true;
+					$('.pass_error').text("password mismatch");
+					// alert("password mismatch");
+				}
+
+				if (iserror = false) {
+					Console.log("in");
+					$.ajax({
+						type: "GET",
+						url: "{% url 'blog-Registration' %}",
+						data: { 'name': name, 'mobile_no': mobile_no, 'password': password },
+						success: function (data) {
+							// $("#showdata").html(data);
+							$("#loginform").show();
+							$("#registrationform").hide();
+							//alert(data);
+						}
+					});
+				}
+			}
+		</script>
+	</div>
+
+</body>

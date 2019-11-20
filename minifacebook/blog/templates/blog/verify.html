@@ -1,0 +1,39 @@
+<div class="content-section">
+
+    {% if  messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor%}
+    {% endif %}
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Verify Your Mobile Number</legend>
+    </fieldset>
+    <div class="form-group">
+        <label for="">OTP</label>
+        <input type="text" class="form-control numbers_only" name="otp" id="otp" aria-describedby="mobHelpId"
+            placeholder="1234567890" maxlength="10">
+        <small id="otpbHelpId" class="form-text  " style="color: #ad3535;"></small>
+    </div>
+    <div class="form-group">
+        <button class="btn btn-outline-info" type="submit" onclick="validate_otp()">Login</button>
+    </div>
+</div>
+<script>
+    function validate_otp() {
+        if (otp == null ||
+            otp == undefined || otp == "" ||
+            otp.length == 0) {
+            $("#nameHelpId").text("Invalid OTP")
+            // alert("Please Enter a valid Mobile Number\n");
+            return false;
+        }
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'blog-verifyuser' %}",
+            data: { 'otp': otp, },
+            success: function (data) {
+                $("#mainbody").html(data)
+            }
+        });
+    }
+</script>

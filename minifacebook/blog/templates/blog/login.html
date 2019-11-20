@@ -1,0 +1,93 @@
+{% extends 'blog/base.html' %}
+{% block containt %}
+<div class="content-section">
+
+    {% if  messages %}
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor%}
+    {% endif %}
+    <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Log In</legend>
+    </fieldset>
+    <form action="{% url 'blog-login' %}" method="POST" onsubmit=" return validate_login()" name="login_form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">Mobile Number</label>
+            <input type="text" class="form-control numbers_only" name="mobile" id="mobile" aria-describedby="mobHelpId"
+                placeholder="Enter your password" maxlength="10">
+            <small id="mobHelpId" class="form-text  " style="color: #ad3535;"></small>
+
+            <label for="password">Password</label>
+            <input type="password" class="form-control" name="password" id="password" placeholder="**********">
+            <small id="passHelpId" class="form-text   " style="color: #ad3535;"></small>
+        </div>
+        <div class="form-group">
+            <button class="btn btn-outline-primary" type="submit">Login</button>
+        </div>
+    </form>
+    <div class="border-top pt-3">
+        <small class=" ">
+            Need An Account? <a class="ml-2" href="{% url 'blog-register_form' %}" onclick="register()">Sign Up
+                Now</a>
+        </small><br>
+        <small class=" ">
+            Forget password?<a class="ml-2" href="{% url 'blog-forgetpass' %}">Click Here</a>
+        </small>
+    </div>
+</div>
+<script>
+    function validate_login() {
+        var mobile = document.forms["login_form"]["mobile"].value;
+        var password = document.forms["login_form"]["password"].value;
+        // var mobile = $("#mobile").val();
+        // var password = $("#password").val();
+        if (mobile == null ||
+            mobile == undefined ||
+            mobile.length == 0) {
+            $("#mobHelpId").text("Please Enter a valid Mobile Number")
+            // alert("Please Enter a valid Mobile Number\n");
+            return false;
+        }
+        if (password == null ||
+            password == undefined ||
+            password.length == 0) {
+            $("#passHelpId").text("Please Enter password")
+            // alert("Please Enter password\n");
+            return false;
+        }
+        // $.ajax({
+        // 	type: 'GET',
+        // 	url: "{% url 'blog-login' %}",
+        // 	data: {
+        // 		'mobile_no': mobile,
+        // 		'password': password
+        // 	},
+        // 	success: function (data) {
+        // 		$("#newbody").html(data);
+        // 		iziToast.success({
+        // 			//  title: ' ',
+        // 			message: "Logged in Successfully ",
+        // 		});
+        // 	}
+        // });
+    }
+
+    $('.numbers_only').keyup(function () {
+        if (!this.value.match(/[0-9]/)) {
+            // alert(this.value);
+            this.value = this.value.replace(/[^0-9]/g, '');
+        }
+    });
+
+    function forgetpassword() {
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'blog-forgetpass' %}",
+            success: function (data) {
+                $("#mainbody").html(data)
+            }
+        });
+    }
+</script>
+{% endblock containt %}

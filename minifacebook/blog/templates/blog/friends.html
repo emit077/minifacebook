@@ -1,0 +1,25 @@
+{% load static %}
+{%if friendlist%}
+
+{% for item  in friendlist  %}
+<div id="mydiv_{{item.id}}" class="content-section " style="background-color: aliceblue;">
+    <div class="row" style="matgin-top:auto">
+        <div class="col-sm-8">
+            <div class="media-body">
+                <div class="media">
+                    <img class="rounded-circle" src="{% static 'blog/media/pc.jpg'%}" style="width: 50px;height: 50px;">
+
+                    <a class="ml-3 mt-1" href="#" style="font-size: 1.7rem;" onclick="userprofile({{item.id}})">
+                        {{ item.name}}
+                    </a><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor  %}
+{% else  %}
+
+<div class="alert alert-warning"> you have no Friends </div>
+
+{% endif  %}
