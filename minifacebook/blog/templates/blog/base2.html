@@ -29,6 +29,10 @@
         a {
             color: #29487d;
         }
+
+        btn {
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -37,21 +41,22 @@
     <!-- -----------------------------Nav Bar-------------------------------------- -->
     <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #5f788a; "> -->
     <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d ">
+        <a class="navbar-brand" href="{% url 'blog-user_post' %}">Mini App</a>
         <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px">
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#"> <span class="sr-only">{{username}}</span></a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
-                </li>
+            <div style=" margin-left:25%;width:50%">
+                <form action="{% url 'blog-SearchUser' %}" method="POST" name="search_form">
+                    {% csrf_token %}
+                    <input class="form-control mr-sm-2 ml-5 ext-center" type="text" id="searchterm" name="searchterm"
+                        placeholder="Search Friends" style="width: 60%;display: inline-block;">
+                    <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
+                </form>
+
+            </div>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:20%">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'blog-delete' %}"> Logout</a>
+                    <a class="nav-link" href="#" onclick="logout()"> Logout</a>
                 </li>
             </ul>
-            <input class="form-control mr-sm-2" type="text" id="Searchinput" placeholder="Search"
-                style="width: 15%;display: inline-block;">
-            <button class="btn btn-outline-light my-2 my-sm-0" id="searchbutton">Search</button>
         </div>
     </nav>
     <!-- ----------------------------------body--------------------------------------------- -->
@@ -81,18 +86,24 @@
                         </div>
                     </div>
                     <ul class="list-group">
-                        <p class='text-muted'>
-                            <li class="list-group-item list-group-item-light">
-                                <a class="nav-link" href="#" onclick="showrequest()">Friend Request
-                                    {{ request.session.recount }}</a>
-                            </li>
-                            <li class="list-group-item list-group-item-light">
-                                <a class="nav-link" href="#" onclick="myfriends()">My Friends
-                                </a>
-                            </li>
-                            <!-- <li class="list-group-item list-group-item-light">Calendars</li>
+                        <li class="list-group-item list-group-item-light">
+                            <div class="row text-center">
+                                <div class="col-sm-6">
+                                    <a class="nav-link mb-0 pb-0" href="{% url 'blog-conrequiestList' %}">
+                                        <h2 class="mb-0 pb-0" style="color:#29487d">{{ requestcount }}</h2>
+                                        Requests
+                                    </a>
+                                </div>
+                                <div class="col-sm-6 Text-center">
+                                    <a class="nav-link mb-0 pb-0" href="{% url 'blog-friendlist' %}">
+                                        <h2 class="mb-0 pb-0" style="color:#29487d"> {{ friendscount }}</h2>
+                                        Friends
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- <li class="list-group-item list-group-item-light">Calendars</li>
                             <li class="list-group-item list-group-item-light">etc</li> -->
-                        </p>
                         <!-- <small id="PostHelpId" class="form-text   " style="color: #ad3535;"></small>
                         <textarea id="notes" cols="auto" rows="5" name="notes" /
                             placeholder=" Write Something to Post  "></textarea>
@@ -122,6 +133,7 @@
         //   on focuse show rhe i post button 
         $("#notes").focus(function () {
             $("#postbtn").show();
+            $("#clearpostbtn").show();
         });
         // $("#notes").focusout(function () {
         //     $("#postbtn").hide();
@@ -212,7 +224,7 @@
                 url: "{% url 'blog-likedby' %}",
                 data: { 'id': id, },
                 success: function (data) {
-                    $("#showcomments_" + id).html(data);
+                    $("#modal-container-list").html(data);
                 }
             });
         }
@@ -261,22 +273,32 @@
             });
         }
 
-        $(document).ready(function () {
-            $("#searchbutton").click(function () {
-                var searchTerm = $("#Searchinput").val();
-                $("#searchresult").show();
-                $("#searchresult").val("Searching....");
-                $.ajax({
-                    type: "GET",
-                    url: "{% url 'blog-SearchUser' %}",
-                    data: { 'searchTerm': searchTerm },
-                    success: function (data) {
-                        // alert(data);
-                        $("#searchresult").html(data);
-                    }
-                });
-            });
-        });
+        //function validate_search() {
+        //    var searchterm = document.forms["search_form"]["searchterm"].value;
+        //    if (searchterm == null ||
+        //        searchterm == undefined ||
+        //        searchterm.length == 0) {
+        //        $("#searchHelpId").text(" ")
+        //        // alert("Please Enter a valid Mobile Number\n");
+        //        return false;
+        //    }
+        //
+        //}
+        //
+        //        $(document).ready(function () {
+        //            $("#searchbutton").click(function () {
+        //
+        //                $.ajax({
+        //                    type: "GET",
+        //                    url: "{% url 'blog-SearchUser' %}",
+        //                    data: { 'searchTerm': searchTerm },
+        //                    success: function (data) {
+        //                        // alert(data);
+        //                        $("#searchresult").html(data);
+        //                    }
+        //                });
+        //            });
+        //        });
 
         function userprofile(id) {
             // alert(id);
@@ -310,40 +332,72 @@
                 }
             });
         }
-        function myfriends() {
-            // alert("data");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-friendlist' %}",
-                // data:{ 'id': id },
-                success: function (data) {
 
-                    $("#mainbody").html(data);
-                }
-            });
-        }
-        function accepted(id) {
-            // alert(id);
+
+    </script>
+    <script>
+        function addfriend(id) {
             $.ajax({
                 type: "GET",
                 url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "accept", 'requested_by': id },
+                data: { 'status': "PENDING", 'requested_by': id },
                 success: function (data) {
-                    $("#mydiv_" + id).hide();
+                    $("#mydiv_" + id).focus();
                     iziToast.info({
                         message: data,
                     });
                 }
             });
         }
+        function unfriend(id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "UNFRIEND", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).focus();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+
+        function cancel_req(id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-cancel_req' %}",
+                data: { 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).focus();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+        function accepted(id) {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'blog-accept_reject_request' %}",
+                data: { 'status': "ACCEPTED", 'requested_by': id },
+                success: function (data) {
+                    $("#mydiv_" + id).focus();
+                    iziToast.info({
+                        message: data,
+                    });
+                }
+            });
+        }
+
         function reject(id) {
             // alert(id);
             $.ajax({
                 type: "GET",
                 url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "reject", 'requested_by': id },
+                data: { 'status': "REJECTED", 'requested_by': id },
                 success: function (data) {
-                    $("#mydiv_" + id).hide();
+                    $("#mydiv_" + id).focus();
                     iziToast.info({
                         message: data,
                     });

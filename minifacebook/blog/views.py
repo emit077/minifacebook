@@ -60,7 +60,7 @@ def registration(request):
         otps.otp=otp
         otps.save()
         messages.success(
-            request, " successfully register,Now Login")
+            request, " Account created successfully. Please Login")
         return redirect('blog-login_form')
         # user = user.objects.create_user(
         #     username=mobile_no, password=password)
@@ -160,14 +160,14 @@ def sentotp(request):
             otps.otp=randomOTP
             otps.save()
             messages.success(
-            request, 'OTP send Successfully')
+            request, 'OTP Sent Successfully')
             return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
         else:
             objOTP=OTP.objects.get(mobile_no=mobile_no)
             objOTP.otp=randomOTP
             objOTP.save()
             messages.success(
-                request, 'OTP send Successfully')
+                request, 'OTP Sent Successfully')
             return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
     else:
         messages.warning(
@@ -239,32 +239,26 @@ def user_post(request):
         print(alreadyliked.count())
         for item in alreadyliked:
             listliked.append(item.post.id)
+            
         userinfo = User_data.objects.get(id=id)
-        friendlist = Requiest_list.objects.filter(
-            Q(requested_by_id=id, status="ACCEPTED") | Q(requested_to_id=id, status="ACCEPTED"))
-        arr = []
-        if friendlist.count() > 0:
-            for item in friendlist:
-                if item.requested_to_id == id:
-                    arr.append(item.requested_by.id)
-                    # print()
-                else:
-                     arr.append(item.requested_to.id)
+        arr= myfriendlist(request,id)
         post_data = Posted_data.objects.filter(
             Q(posted_by_id__in=arr)|Q(posted_by_id=id)).order_by('-posted_on')
 
         data = Posted_data.objects.all().order_by('-posted_on')
+        # friend requests-----------------------
         con_request = Requiest_list.objects.filter(
             requested_to=id, status="PENDING")
-        requests = con_request.count()
-        request.session['recount'] = requests
+        requestcount = con_request.count()
+        friendscount= len(arr)
+        request.session['requests']=requestcount
+        request.session['Frineds']=friendscount
         if data.count() > 0:
-            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requests': requests, "listliked": listliked})
+            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked})
         else:
             return render(request, 'blog/share.html', {'userinfo': userinfo})
     else:
         return redirect('blog-home')
-
 def Logout(request):
     try:
         # del request.session['name']
@@ -278,14 +272,6 @@ def Logout(request):
 
 def Share(request):
     return user_post(request)
-    # if request.session['userid']:
-    #     data = Posted_data.objects.all().order_by('-posted_on')
-    #     if data.count() > 0:
-    #         return render(request, 'blog/share.html', {'data': data, 'hide': "hide"})
-    #     else:
-    #         return HttpResponse("no notes found."+str(id))
-    # else:
-    #     return render(request, 'blog/home.html')
 
 
 def Save_notes(request):  # saving the notes
@@ -311,16 +297,36 @@ def Delete_notes(request):  # deleting  notes
 
 
 def SearchUser(request):
-    searchTerm = request.GET.get('searchTerm', None)
-    userid = request.session['userid']
-    try:
-        val = int(searchTerm)
-        listuserdata = User_data.objects.filter(
-            mobile_no__icontains=val).exclude(id=userid)
-    except ValueError:
-        listuserdata = User_data.objects.filter(
-            name__icontains=searchTerm).exclude(id=userid)
-    return render(request, 'blog/searchlist.html', {'data': listuserdata})
+    searchTerm = request.POST.get('searchterm', None)
+    print(searchTerm)
+    id= request.session.get('userid', None) 
+    friendrequestarr=friendrequest(request,id)
+    friendarr= myfriendlist(request,id)
+    friendscount=len(friendarr)
+    requestcount= len(friendrequestarr)
+
+    if id:
+        conarr=myconnection(request,id)
+        friendarr= myfriendlist(request,id)
+        myrequestarr=myrequest(request,id)
+        print()
+       
+        if searchTerm:
+            userid = request.session['userid']
+            try:
+                val = int(searchTerm)
+                listuserdata = User_data.objects.filter(
+                    mobile_no__icontains=val).exclude(id=userid)
+            except ValueError:
+                listuserdata = User_data.objects.filter(
+                    name__icontains=searchTerm)
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr})
+        else:
+            listuserdata = User_data.objects.all()[:20]
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount})
+
+    else:
+        return redirect('blog-home')
 
 # session handling-------------------------------------------#############
 def create_session(request):
@@ -359,27 +365,19 @@ def userprofile(request,name,id):
     if  myid:
         if id != None and id != "":
             profile_data = User_data.objects.get(id=id)
-            already_requested=Requiest_list.objects.filter(Q(requested_by=id)
-                                                | Q(requested_to=id))
-            print(already_requested)
-            connected=[]
-            if already_requested.count()>0:
-                for item in already_requested:
-                    if item.requested_to==id:
-                        connected.append(item.requested_by.id)
-                    else:
-                        connected.append(item.requested_to.id)
-            friendlist = Requiest_list.objects.filter(Q(requested_by=id, status="ACCEPTED")
-                                                | Q(requested_to=id, status="ACCEPTED"))
-            arr=[]
-            if friendlist.count() > 0:
-                for item in friendlist:
-                    if item.requested_to_id==id:
-                        arr.append(item.requested_by.id)
-                    else:
-                        arr.append(item.requested_to.id)
-            myfriends= User_data.objects.filter(id__in=arr)
-            return render(request, 'blog/userprofile.html', {'profile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected})
+            connected=myconnection(request,myid)
+            friendarr= myfriendlist(request,myid)
+            myrequestarr=myrequest(request,myid)
+            friendarrr= myfriendlist(request,id)
+            
+            myfriends= User_data.objects.filter(id__in=friendarrr)
+        # for count------------------
+            friendrequestarr=friendrequest(request,myid)
+            friendarr= myfriendlist(request,myid)
+            friendscount=len(friendarr)
+            requestcount= len(friendrequestarr)
+            # --------------------
+            return render(request, 'blog/userprofile.html', {'profile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount})
         else:
             messages.warning(
                     request, 'profile not found')
@@ -416,51 +414,137 @@ def con_request(request):
         requestentry.Accept_date = timezone.now()
         requestentry.request_status = "PENDING"
         requestentry.save()
-        # instence.requested_by=requested_by
-        # instence.save()
-        return HttpResponse("Request send successfully")
+        return HttpResponse("Request sent successfully")
 
 
 def accept_reject_request(request):
     id = request.GET.get('requested_by', None)
-    myid = request.session['userid']
+    status = request.GET.get('status', None)
+    myid = request.session.get('userid', None)
+    print("accpp")
+    print(status)
     print(myid)
     print(id)
-    RL = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="PENDING")
-    if RL.count()>0:
-        RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid )
-        if request.GET['status'] == 'accept':
-            RL.status = "ACCEPTED"
-            RL.save()
-            return HttpResponse("Request accepted")
-            request.session['recount']=request.session['recount']+1
+    RLP = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="PENDING")
+    RLU = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="ACCEPTED")
+    RLP2 = Requiest_list.objects.filter(requested_by_id=myid, requested_to_id=id, status="PENDING")
+    
+    if status:
+        if status=="UNFRIEND":
+            print("un")
+            if RLU.count()>0:
+                RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid,status="ACCEPTED" )
+                RL.delete()
+            else:
+                RL = Requiest_list.objects.get(requested_by_id=myid, requested_to_id=id,status="ACCEPTED" )
+                RL.delete()
+        elif status=="REJECTED":
+            print("reje")
+            if RLP.count()>0:
+                RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid )
+                RL.status = status
+                RL.save()
+                return HttpResponse("Request rejected")
+            else:
+                return HttpResponse(" Invalid Request")
+            
+        elif status=="ACCEPTED":
+            print ("ass")
+            if RLP.count()>0:
+                RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid )
+                RL.status = status
+                RL.save()
+                return HttpResponse("Request Accepted")
+            else:
+                return HttpResponse(" Invalid Request")
         else:
-            RL.status = "REJECTED"
+            print("add")
+            RL = Requiest_list()
+            RL.requested_by_id=myid
+            RL.requested_to_id=id
+            RL.status = status
             RL.save()
-            return HttpResponse("Request rejected")
-            request.session['recount']=request.session['recount']-1
+            return HttpResponse("Successfully  Requested")
+            
+    else :
+        print("can")
+        if RLP2.count()>0:
+            RL = Requiest_list.objects.get(requested_by_id=myid, requested_to_id=id )
+            RL.delete()
+            return HttpResponse("Request Canceled")
+        else:
+            return HttpResponse(" Invalid Request")
+     
+def accept_reject(request):
+    id = request.GET.get('requested_by', None)
+    status = request.GET.get('status', None)
+    myid = request.session.get('userid', None)
+    RLP = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="PENDING")
+    if RLP.count()>0:
+        RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid,status="PENDING" )
+        RL.status = status
+        RL.save()
+        return HttpResponse("Request Accepted")
     else:
-        return HttpResponse("Request Not Found")
+        return HttpResponse("Invalid Request ")
+    
+def unfriend(request):
+    id = request.GET.get('requested_by', None)
+    status = request.GET.get('status', None)
+    myid = request.session.get('userid', None)
+    RLU = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="ACCEPTED")
+    RLU2 = Requiest_list.objects.filter(requested_by_id=myid, requested_to_id=id, status="ACCEPTED")
+    if RLU>0:
+        RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid )
+        RL.delete()
+    else:
+        if RLU2>0:
+            RL = Requiest_list.objects.get(requested_by_id=myid, requested_to_id=id )
+            RL.delete()
+            return HttpResponse(" Unfriend")
+        else:
+            return HttpResponse(" Invalid Request")
+        
+def cancel_req(request):
+    id = request.GET.get('requested_by', None)
+    myid = request.session.get('userid', None)
+    RLP = Requiest_list.objects.filter(requested_by_id=myid, requested_to_id=id, status="PENDING")
+    if RLP.count()>0:
+        RL = Requiest_list.objects.get(requested_by_id=myid, requested_to_id=id,status="PENDING" )
+        RL.delete()
+        print("del")
+    else:
+        return HttpResponse(" Invalid Request")
+        
+        
+    
+    
 
+            
+        
 def conrequiestList(request):
     id = request.session['userid']
-    con_request = Requiest_list.objects.filter(
-        requested_to=id, status="PENDING")
-    cnt = con_request.count()
-    arr = []
-    for item in con_request:
-        arr.append(item.requested_by.id)
-    userdata = User_data.objects.filter(id__in=arr)
-    return render(request, 'blog/friendrequest.html', {'userdata': userdata,})
-    # for item in userdata:
-    #     result += "<p>" + item.name
-    #     result += "<input type='button' class='btn btn-outline-info' value='accept' onclick='accepted("+str(
-    #         item.id)+")' style='margin-left:120px'/>"
-    #     result += "<input type='button' class='btn btn-outline-danger' value='reject' onclick='reject(" + \
-    #         str(item.id)+")' /></p>"
-    # result += "</ul>"
-    # return JsonResponse(result, safe=False)
-    # return HttpResponse(userdata.count())
+    if id :
+        # forcount
+        friendrequestarr=friendrequest(request,id)
+        friendarr= myfriendlist(request,id)
+        friendscount=len(friendarr)
+        requestcount= len(friendrequestarr)
+        # ------------------
+        friendarr =myfriendlist(request,id)
+        conarr=myconnection(request,id)
+        con_request = Requiest_list.objects.filter(
+            requested_to=id, status="PENDING")
+        cnt = con_request.count()
+        arr = []
+        for item in con_request:
+            arr.append(item.requested_by.id)
+        userdata = User_data.objects.filter(id__in=arr)
+        return render(request, 'blog/searchlist.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+        
+        # return render(request, 'blog/friendrequest.html', {'userdata': userdata,})
+    else:
+        return redirect('blog-home')
 
 
 def comment_save(request):
@@ -501,24 +585,24 @@ def like_post(request):
             return HttpResponse("liked")
     else:
         return HttpResponse("already liked")
-    # return HttpResponse("already liked"+str(id)+"/"+str(myid))
-    # return Share(request)
+ 
 
 
 def friendlist(request):
     id = request.session['userid']
-    friendlist = Requiest_list.objects.filter(Q(requested_by=id, status="ACCEPTED")
-                                              | Q(requested_to=id, status="ACCEPTED"))
-    arr=[]
-    if friendlist.count() > 0:
-        for item in friendlist:
-            if item.requested_to_id==id:
-                arr.append(item.requested_by.id)
-            else:
-                arr.append(item.requested_to.id)
-    myfriends= User_data.objects.filter(id__in=arr)
+    friendarr =myfriendlist(request,id)
+    conarr=myconnection(request,id)
+    print(len(friendarr))
+    myfriends= User_data.objects.filter(id__in=friendarr)
+    # forcount
+    friendrequestarr=friendrequest(request,id)
+    friendarr= myfriendlist(request,id)
+    friendscount=len(friendarr)
+    requestcount= len(friendrequestarr)
+    # ----------------------
     if myfriends.count()>0:
-        return render(request, 'blog/friends.html', {'friendlist':myfriends})
+        # return render(request, 'blog/friends.html', {'friendlist':myfriends})
+        return render(request, 'blog/searchlist.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
     else:
         messages.warning(
                 request, 'No Ftiends Friends found')
@@ -526,16 +610,19 @@ def friendlist(request):
     
 
 def likedby(request):
+    myid = request.session['userid']
+    # for count----------------
+    friendrequestarr=friendrequest(request,myid)
+    friendarr= myfriendlist(request,myid)
+    friendscount=len(friendarr)
+    requestcount= len(friendrequestarr)
+    conarr=myconnection(request,myid)
+    # -------------
     postid = request.GET.get('id', None)
     LB = Likes.objects.filter(post_id=postid)
+    # return render(request, 'blog/searchlist.html', {'data': LB,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+    
     return render(request, 'blog/likedby.html',{'LB':LB})
-
-    # result = "<ul>"
-    # for item in LB:
-    #     result += "<p>"+item.liked_by.name+"</p>"
-    # result += "</ul>"
-    # return JsonResponse(result, safe=False)
-    # return HttpResponse(str(LB.count()))
 
 
 def commentsby(request):
@@ -548,5 +635,55 @@ def commentsby(request):
         return render(request, 'blog/commentlist.html', {'comment_list': CB})
 
 def myconnection(request,id):
+    print(id)
     if id:
-        listcon= Requiest_list.objects.filter()
+        listcon= Requiest_list.objects.filter(Q(requested_by=id)|Q(requested_to=id)).exclude(status="REJECTED")
+        print (listcon)
+        arr=[]
+        for item in listcon:
+            if item.requested_to.id==id:
+                arr.append(item.requested_by.id)
+            else:
+                arr.append(item.requested_to.id)
+        # print(arr)
+        return arr
+    return 0
+ 
+def myfriendlist(request, id):
+    if id:
+        listfriend=Requiest_list.objects.filter(Q(requested_by=id,status="ACCEPTED")|Q(requested_to=id,status="ACCEPTED"))
+        print(listfriend)
+        arr=[]
+        for item in listfriend:
+            if item.requested_to.id==id:
+                arr.append(item.requested_by.id)
+            else:
+                arr.append(item.requested_to.id)
+        # print(arr)
+        return arr
+    return 0
+
+def myrequest(request,id):
+    if id:
+        listfriend=Requiest_list.objects.filter(requested_by=id,status="PENDING")
+        arr=[]
+        for item in listfriend:
+            arr.append(item.requested_to.id)
+        return arr
+    return 0
+
+def friendrequest(request,id):
+    if id:
+        listfriend=Requiest_list.objects.filter(requested_to=id,status="PENDING")
+        arr=[]
+        for item in listfriend:
+            arr.append(item.requested_to.id)
+        return arr
+    return 0
+
+
+    
+    
+
+
+    

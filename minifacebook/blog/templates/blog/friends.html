@@ -1,17 +1,21 @@
+{% extends 'blog/base2.html' %}
+{% block base2 %}
+
 {% load static %}
-{%if friendlist%}
+{% if friendlist %}
 
 {% for item  in friendlist  %}
 <div id="mydiv_{{item.id}}" class="content-section " style="background-color: aliceblue;">
     <div class="row" style="matgin-top:auto">
-        <div class="col-sm-8">
+        <div class="col-sm-7">
             <div class="media-body">
                 <div class="media">
                     <img class="rounded-circle" src="{% static 'blog/media/pc.jpg'%}" style="width: 50px;height: 50px;">
 
-                    <a class="ml-3 mt-1" href="#" style="font-size: 1.7rem;" onclick="userprofile({{item.id}})">
+                    <a class="ml-3 mt-1" href="{% url 'blog-userprofile' item.name item.id %}" style="font-size: 1.7rem;">
                         {{ item.name}}
                     </a><br>
+                    {{item.image}}
                 </div>
             </div>
         </div>
@@ -23,3 +27,4 @@
 <div class="alert alert-warning"> you have no Friends </div>
 
 {% endif  %}
+{% endblock base2 %}

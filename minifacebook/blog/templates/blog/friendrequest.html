@@ -1,5 +1,6 @@
+{% extends 'blog/base2.html' %}
+{% block base2 %}
 {%if userdata%}
-
 {% for item  in userdata  %}
 <div id="mydiv_{{item.id}}" class="content-section " style="background-color: aliceblue;">
     <div class="row" style="matgin-top:auto">
@@ -7,7 +8,7 @@
             <!-- <div class="media"> -->
 
             <div class="media-body">
-                <h6 class="account-heading"><a href="" onclick="userprofile({{item.id}})"
+                <h6 class="account-heading"><a href="{% url 'blog-userprofile' item.name item.id %}"
                         style="font-size:16px">{{ item.name }}</a></h6>
             </div>
             <!-- </div> -->
@@ -25,3 +26,4 @@
     <div class="alert alert-warning"> NO request found</div>
 
     {% endif  %}
+{% endblock base2 %}

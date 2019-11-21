@@ -26,19 +26,19 @@
 
 <body id="newbody" style="background-color: #e9ebee;">
 	<nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d;">
-		<a class="navbar-brand" href="#">Mini App</a>
+		<a class="navbar-brand" href="{% url 'blog-home' %}">Mini App</a>
 		<button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
 			aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
-		<div class="collapse navbar-collapse" id="collapsibleNavId">
-			<ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-				<li id="blog-home" class="nav-item active">
-					<a class="nav-link" href="{% url 'blog-home' %}">Home <span class="sr-only">(current)</span></a>
-				</li>
+		<div class="collapse navbar-collapse mr-5" id="collapsibleNavId">
+			<ul class="navbar-nav mr-auto mt-2 mt-lg-0 text-right" style="margin-left:90%;">
+				<!-- <li id="blog-home" class="nav-item active">
+					<a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
+				</li> -->
 				<li id="blog-login" class="nav-item">
 					<a class="nav-link" href="{% url 'blog-login_form' %}" onclick="login()"> Login</a>
 				</li>
 				<li id="blog-register" class="nav-item dropdown">
-					<a class="nav-link" href="{% url 'blog-register_form' %}" onclick="register()"> Register</a>
+					<a class="nav-link" href="{% url 'blog-register_form' %}" onclick="register()"> Signup</a>
 				</li>
 			</ul>
 			<!-- <form class="form-inline my-2 my-lg-0">

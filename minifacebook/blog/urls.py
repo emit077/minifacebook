@@ -10,7 +10,7 @@ urlpatterns = [
     path('sentotp/', views.sentotp, name='blog-sentotp'),
     path('newpassword/', views.newpassword, name='blog-newpassword'),
     path('resetpass/', views.resetpass, name='blog-resetpass'),
-    path('register/', views.register_form, name='blog-register_form'),
+    path('singup/', views.register_form, name='blog-register_form'),
     path('registration/', views.registration, name='blog-registration'),
     path('verify_mobile_number/', views.verify_mobile_number, name='blog-verify_mobile_number'),
     path('home/', views.user_post, name='blog-user_post'),
@@ -18,7 +18,7 @@ urlpatterns = [
     path('Save_notes/', views.Save_notes, name='blog-Save_notes'),
     path('Delete_notes/', views.Delete_notes, name='blog-Delete_notes'),
     # path('Logout', views.Logout, name='blog-Logout'),
-    path('SearchUser/', views.SearchUser, name='blog-SearchUser'),
+    path('searchresults/', views.SearchUser, name='blog-SearchUser'),
     path('create/', views.create_session),
     path('access/', views.access_session),
     path('logout/', views.delete_session, name='blog-delete'),
@@ -33,6 +33,9 @@ urlpatterns = [
          name='blog-accept_reject_request'),
     path('likedby/', views.likedby, name='blog-likedby'),
     path('commentsby/', views.commentsby, name='blog-commentsby'),
+    path('unfriend/', views.unfriend, name='blog-unfriend'),
+    path('accept_reject/', views.accept_reject, name='blog-accept_reject'),
+    path('cancel_req/', views.cancel_req, name='blog-cancel_req'),
 
 
 ]

@@ -9,14 +9,31 @@
         <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}">
         {% endif %}
 
-
+{% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
         <div class="media-body pt-4">
             <h2 class="account-heading">{{ profile_data.name }}</h2>
             <p class="text-secondary">{{  profile_data.mobile_no}}</p><br>
             {% if request.session.userid != profile_data.id %}
-            {% if   request.session.userid  not in connected  %}
-            <button class="btn btn-primary" onclick="con_request({{profile_data.id }})">Add Frriend</button>
-            {% endif %}
+             {% if profile_data.id in connected %}
+                    {% if profile_data.id in friendarr %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                        <a href="" class="btn btn-outline-primary" onclick="unfriend({{profile_data.id}})">Unfriend</a>
+                    {% else %}
+                        {% if profile_data.id in myrequestarr %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                            <a href="" class="btn btn-outline-primary" onclick="cancel_req({{profile_data.id}})">Cancel Request</a>
+                        {% else %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                            <div class="form-group">
+                                <a href="" class="btn btn-outline-primary" onclick="accepted({{profile_data.id}})">Accept</a>
+                                <a href="" class="btn btn-outline-warning" onclick="reject({{profile_data.id}})">Reject</a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+            {% else %}
+                     {% comment %} {{ item.id}} {% endcomment %}
+                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{profile_data.id}})">Add Friend</a>
+                {% endif %}
             {% endif %}
         </div>
     </div>
@@ -24,7 +41,7 @@
     <form>
         {% csrf_token %}
         <fieldset class="form-group">
-            <legend class="border-bottom mb-4"> Upload frofile picture
+            <legend class="border-bottom mb-4"> Upload profile picture
             </legend>
             <input type="file" name="profile_pic" id="profile_pic">
             <button class="btn btn-outline-info" type="submit" onclick="saveimages()">Update</button>
@@ -64,7 +81,7 @@
 
     <script>
         function saveimages() {
-            // alert();
+            alert();
             formdata = new FormData();
             var file = $("#profile_pic").files[0];
             if (formdata) {
@@ -78,6 +95,7 @@
                     success: function (data) {
                         alert(data);
                         $("#mainbody").html(data);
+
                     }
                 });
             }
