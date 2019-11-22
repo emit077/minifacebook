@@ -40,7 +40,7 @@
 {% for pi in data  %}
 <article class="media content-section">
     <div class="media-body">
-        <div class="article-metadata">
+        <div class="">
             <div class="media">
                 {% if pi.posted_by.image %}
                 <img class="rounded-circle account-img" src="{{ pi.posted_by.image.url }}"
@@ -58,23 +58,40 @@
                 </div>
             </div>
         </div>
-        <p class="article-content">{{ pi.text }}</p>
+        <p class="article-content ml-5 mb-2">{{ pi.text }}</p>
 
-        <div class="container">
-            <!-- <div class=" row text-muted ">
-                <div class="col-sm-6 text-left">
-                    <button type="button" class="btn" data-toggle="modal" data-target="#modelId"
+        <div class="container mt-0 pt-0">
+            <div class=" row text-muted mt-0 pt-0">
+                <div class="col-sm-6 text-left text-muted mt-0 pt-0">
+                    {% if pi.likes_count != 0 %}
+                    <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId"
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
-                        {{pi.likes_count}} Like
+                        {{pi.likes_count}}
+                        {% if pi.likes_count > 1 %}
+                        Likes
+                        {% else %}
+                        Like
+                        {% endif %}
                     </button>
+                    {% endif %}
+
+                    {% if pi.comments_count != 0 %}
+                    <button class="btn ml-0 pl-0" href="#" style="font-size:10px;" onclick="CommentBy({{pi.id}})">
+                        , {{pi.comments_count}}
+                        {% if pi.comments_count > 1%}
+                        Comments
+                        {% else %}
+                        Comment
+                        {% endif %}
+                    </button>
+                    {% endif %}
                 </div>
-                <div class="col-sm-6 text-right">
+                <!-- <div class="col-sm-6 text-right">
                     <button class="btn" href="#" style="font-size:10px;"
                         onclick="CommentBy({{pi.id}})">{{pi.comments_count}} Comment</button>
-                </div>
-            </div>  -->
-            <div class=" row text-center"
-                style="border-top: solid 1px lightgray; padding-top: 5px;border-bottom: solid 1px lightgray; padding-bottom: 5px;">
+                </div> -->
+            </div>
+            <div class=" row text-center">
                 <div class="col-sm-6">
                     {% if pi.id in listliked  %}
                     <button class=" btn btn-outline-light" style="width: 100%;">
@@ -82,7 +99,7 @@
                             <img src="{% static 'blog/media/icon-like-blue.png' %}"
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
                                 alt="not fond">
-                            {{pi.likes_count}}
+                            <!-- {{pi.likes_count}} -->
                         </p>
                     </button>
                     {% else %}
@@ -91,7 +108,7 @@
                             <img src="{% static 'blog/media/icon-like-gray.png' %}"
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
                                 alt="not fond">
-                            {{pi.likes_count}}
+                            <!-- {{pi.likes_count}} -->
                         </p>
                     </button>
                     {% endif %}
@@ -105,7 +122,7 @@
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
                                 alt="not fond">
 
-                            {{pi.comments_count}}
+                            <!-- {{pi.comments_count}} -->
                         </p>
 
                     </button>

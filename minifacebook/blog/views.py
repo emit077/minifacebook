@@ -331,7 +331,7 @@ def SearchUser(request):
             except ValueError:
                 listuserdata = User_data.objects.filter(
                     name__icontains=searchTerm)
-            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data})
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data,'searchterm':searchTerm})
         else:
             listuserdata = User_data.objects.all()[:20]
             return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data})
@@ -385,14 +385,20 @@ def userprofile(request,name,id):
             myfriends= User_data.objects.filter(id__in=friendarrr)[:5]
             if myfriends.count()==5:
                 hide="Hide"
-                
+            
+            alreadyliked = Likes.objects.filter(liked_by_id=myid)
+            listliked = []
+            for item in alreadyliked:
+                listliked.append(item.post.id)
         # for count------------------
             friendrequestarr=friendrequest(request,myid)
             friendarr= myfriendlist(request,myid)
             friendscount=len(friendarr)
             requestcount= len(friendrequestarr)
             # --------------------
-            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide})
+            # for feeds
+            feeds=feed_for_profie(request,id)
+            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide,'feeds':feeds,'listliked':listliked})
         else:
             messages.warning(
                     request, 'profile not found')
@@ -620,10 +626,11 @@ def friendlist(request,id):
         # return render(request, 'blog/friends.html', {'friendlist':myfriends})
         return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
     else:
-        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
 
 
 def likedby(request):
+    print('likedby')
     myid = request.session['userid']
     # for count----------------
     friendrequestarr=friendrequest(request,myid)
@@ -696,7 +703,20 @@ def friendrequest(request,id):
         return arr
     return 0
 
-
+def feed_for_profie(request,id ):
+    print(id)
+    if id:
+        alreadyliked = Likes.objects.filter(liked_by_id=id)
+        listliked = []
+        for item in alreadyliked:
+            listliked.append(item.post.id)
+            
+        arr= myfriendlist(request,id)
+        post_data = Posted_data.objects.filter(
+            Q(posted_by_id__in=arr)|Q(posted_by_id=id)).order_by('-posted_on')
+        return post_data
+    else:
+        return None
     
     
 

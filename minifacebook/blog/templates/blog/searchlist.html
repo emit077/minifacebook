@@ -1,13 +1,17 @@
 {% extends 'blog/base2.html' %}
 {% load static %}
 {% block base2 %}
+<!-- <div class="alert alert-info p-0 pl-2 m-0   "> -->
+<h5 class="ml-2">
+    Showing results for " {{searchterm}} "
+</h5>
+<!-- </div> -->
 {% if data  %}
-
 {% for item  in data  %}
 {% comment %} {{connected}}
 {{friendarr}}
 {{myrequestarr}} {% endcomment %}
-<div id="mydiv_{{item.id}}" class="content-section " style="background-color:;">
+<div id="mydiv_{{item.id}}" class="content-section m-0">
     <div class="row" style="matgin-top:auto">
         <div class="col-sm-8">
             <div class="media-body">
@@ -25,40 +29,38 @@
                 </div>
             </div>
         </div>
-
         <div class="col-sm-4 mt-1 text-right">
             {% if item.id == request.session.userid %}
 
             {% else %}
-                {% if item.id in connected %}
-                    {% if item.id in friendarr %}
-                    {% comment %} {{ item.id}} {% endcomment %}
-                    <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.id}})">Unfriend</a>
-                    {% else %}
-                        {% if item.id in myrequestarr %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.id}})">Cancel Request</a>
-                        {% else %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                         <div class="form-group">
-                            <a href="" class="btn btn-outline-primary" onclick="accepted({{item.id}})">Accept</a>
-                            <a href="" class="btn btn-outline-warning" onclick="reject({{item.id}})">Reject</a>
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                    {% else %}
-                     {% comment %} {{ item.id}} {% endcomment %}
-                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{item.id}})">Add Friend</a>
-                {% endif %}
+            {% if item.id in connected %}
+            {% if item.id in friendarr %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary custom_width" onclick="unfriend({{item.id}})">Unfriend</a>
+            {% else %}
+            {% if item.id in myrequestarr %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary custom_width" onclick="cancel_req({{item.id}})">Cancel Request</a>
+            {% else %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <div class="form-group">
+                <a href="" class="btn btn-outline-primary" onclick="accepted({{item.id}})">Accept</a>
+                <a href="" class="btn btn-outline-warning" onclick="reject({{item.id}})">Reject</a>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% else %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary custom_width" onclick="addfriend({{item.id}})">Add Friend</a>
+            {% endif %}
             {% endif %}
         </div>
-        <br>
     </div>
 </div>
 {% endfor %}
 {% else %}
-<div style="text-align-last: center;">
-    <p class="text-muted"> not found </>
+<div class="text-center alert alert-light">
+    <h5 class="text-muted"> No friends found, Please try with other keywords </h5>
 </div>
 {% endif %}
 

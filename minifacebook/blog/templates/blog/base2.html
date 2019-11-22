@@ -33,6 +33,10 @@
         btn {
             cursor: pointer;
         }
+
+        .custom_width {
+            width: 73%
+        }
     </style>
 </head>
 
@@ -47,7 +51,7 @@
                 <form action="{% url 'blog-SearchUser' %}" method="POST" name="search_form">
                     {% csrf_token %}
                     <input class="form-control mr-sm-2 ml-5 ext-center" type="text" id="searchterm" name="searchterm"
-                        placeholder="Search Friends" style="width: 60%;display: inline-block;">
+                        placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
                     <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
                 </form>
 
