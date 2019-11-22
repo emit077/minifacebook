@@ -1,30 +1,66 @@
 {% extends 'blog/base2.html' %}
-{% block base2 %}
-
 {% load static %}
-{% if friendlist %}
+{% block base2 %}
+{% if data  %}
 
-{% for item  in friendlist  %}
-<div id="mydiv_{{item.id}}" class="content-section " style="background-color: aliceblue;">
+{% for item  in data  %}
+{% comment %} {{connected}}
+{{friendarr}}
+{{myrequestarr}} {% endcomment %}
+<div id="mydiv_{{item.id}}" class="content-section " style="background-color:;">
     <div class="row" style="matgin-top:auto">
-        <div class="col-sm-7">
+        <div class="col-sm-8">
             <div class="media-body">
                 <div class="media">
-                    <img class="rounded-circle" src="{% static 'blog/media/pc.jpg'%}" style="width: 50px;height: 50px;">
-
-                    <a class="ml-3 mt-1" href="{% url 'blog-userprofile' item.name item.id %}" style="font-size: 1.7rem;">
+                    {% if item.image %}
+                    <img class="rounded-circle" src="{{ item.image.url }}" style="width: 50px;height: 50px;">
+                    {% else %}
+                    <img class="rounded-circle" src="{% static 'blog/media/pc.jpg' %}"
+                        style="width: 50px;height: 50px;">
+                    {% endif %}
+                    <a class="ml-3 mt-2" href="{% url 'blog-userprofile' item.name item.id %}"
+                        style="font-size: 1.5rem;">
                         {{ item.name}}
-                    </a><br>
-                    {{item.image}}
+                    </a>
                 </div>
             </div>
         </div>
+
+        <div class="col-sm-4 mt-1 text-center">
+            {% if item.id == request.session.userid %}
+
+            {% else %}
+                {% if item.id in connected %}
+                    {% if item.id in friendarr %}
+                    {% comment %} {{ item.id}} {% endcomment %}
+                    <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.id}})">Unfriend</a>
+                    {% else %}
+                        {% if item.id in myrequestarr %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.id}})">Cancel Request</a>
+                        {% else %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                         <div class="form-group">
+                            <a href="" class="btn btn-outline-primary" onclick="accepted({{item.id}})">Accept</a>
+                            <a href="" class="btn btn-outline-warning" onclick="reject({{item.id}})">Reject</a>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    {% else %}
+                     {% comment %} {{ item.id}} {% endcomment %}
+                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{item.id}})">Add Friend</a>
+                {% endif %}
+            {% endif %}
+        </div>
+        <br>
     </div>
 </div>
-{% endfor  %}
-{% else  %}
+{% endfor %}
+{% else %}
+<div style="text-align-last: center;">
+    <h5 class="text-muted"> No Friends yet , Seach Your Friends Here.</h5>
+</div>
+{% endif %}
 
-<div class="alert alert-warning"> you have no Friends </div>
 
-{% endif  %}
 {% endblock base2 %}

@@ -1,67 +1,77 @@
 {% extends 'blog/base2.html' %}
 {% block base2 %}
 {% load static %}
-<div class="content-section">
-    <div class="media">
-        {% if profile_data.image %}
-        <img class="rounded-circle account-img" src="{{ profile_data.image.url }}">
+<!-- <style>
+    .profile {
+        background-image: url("{% static 'blog/media/pc.jpg' %}");
+    }
+</style> -->
+<div class="content-section ">
+    <div class="media profile" style=" ">
+        {% if userprofile_data.image %}
+        <img class="rounded-circle account-img " src="{{ userprofile_data.image.url }}">
         {% else %}
-        <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}">
+        <img class="rounded-circle account-img " src="{% static 'blog/media/pc.jpg' %}">
         {% endif %}
 
-{% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
-        <div class="media-body pt-4">
-            <h2 class="account-heading">{{ profile_data.name }}</h2>
-            <p class="text-secondary">{{  profile_data.mobile_no}}</p><br>
-            {% if request.session.userid != profile_data.id %}
-             {% if profile_data.id in connected %}
-                    {% if profile_data.id in friendarr %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                        <a href="" class="btn btn-outline-primary" onclick="unfriend({{profile_data.id}})">Unfriend</a>
-                    {% else %}
-                        {% if profile_data.id in myrequestarr %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                            <a href="" class="btn btn-outline-primary" onclick="cancel_req({{profile_data.id}})">Cancel Request</a>
-                        {% else %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                            <div class="form-group">
-                                <a href="" class="btn btn-outline-primary" onclick="accepted({{profile_data.id}})">Accept</a>
-                                <a href="" class="btn btn-outline-warning" onclick="reject({{profile_data.id}})">Reject</a>
-                            </div>
-                        {% endif %}
-                    {% endif %}
-            {% else %}
-                     {% comment %} {{ item.id}} {% endcomment %}
-                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{profile_data.id}})">Add Friend</a>
-                {% endif %}
-            {% endif %}
+        {% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
+        <div class="media-body" style="height: 130px">
+
+
+            <h2 class="account-heading mt-5 pt-4">{{ userprofile_data.name }}</h2>
+            <!-- <p class="text-secondary">{{  userprofile_data.mobile_no}}</p><br> -->
+
+            <!-- <legend class="border-bottom">
+        <h3 class="account-heading" style="">{{ userprofile_data.name }}</h3>
+    </legend> -->
         </div>
     </div>
-    {% if request.session.userid == profile_data.id %}
-    <form>
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4"> Upload profile picture
-            </legend>
-            <input type="file" name="profile_pic" id="profile_pic">
-            <button class="btn btn-outline-info" type="submit" onclick="saveimages()">Update</button>
-        </fieldset>
-    </form>
-    {% else %}
+    <div class=" text-right" style="width: 100%;">
+        {% if request.session.userid == userprofile_data.id %}
+        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modelId"
+            onclick="crearimage()">
+            Edit Profile
+        </button>
+        {% endif %}
 
-    {% endif %}
+        {% if request.session.userid != userprofile_data.id %}
+
+        {% if userprofile_data.id in connected %}
+        {% if userprofile_data.id in friendarr %}
+        {% comment %} {{ item.id}} {% endcomment %}
+        <a href="" class="btn btn-outline-primary" onclick="unfriend({{userprofile_data.id}})">Unfriend</a>
+        {% else %}
+        {% if userprofile_data.id in myrequestarr %}
+        {% comment %} {{ item.id}} {% endcomment %}
+        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{userprofile_data.id}})">Cancel Request</a>
+        {% else %}
+        {% comment %} {{ item.id}} {% endcomment %}
+        <div class="form-group">
+            <a href="" class="btn btn-outline-primary" onclick="accepted({{userprofile_data.id}})">Accept</a>
+            <a href="" class="btn btn-outline-warning" onclick="reject({{userprofile_data.id}})">Reject</a>
+        </div>
+        {% endif %}
+        {% endif %}
+        {% else %}
+        {% comment %} {{ item.id}} {% endcomment %}
+        <a href="" class="btn btn-outline-primary" onclick="addfriend({{userprofile_data.id}})">Add Friend</a>
+        {% endif %}
+        {% endif %}
+    </div>
+
 </div>
 <div class="row">
     {% if friendlist %}
     {% for item  in friendlist  %}
     <div class=" col-sm-2">
-        <div class="card">
+        <div class="card" style="background: transparent; border:none">
             <img class="card-img-top" data-src="holder.js/100x180/?text=Image cap" alt="">
-            <div class="card-body p-0">
+            <div class="card-body p-0" style="background: transparent;">
                 <a href="{% url 'blog-userprofile' item.name item.id  %}">
-                    <div class="card text-left">
+                    <div class="card text-left" style="background: transparent; border:none">
                         {% if item.image %}
-                        <img class="card-img-top" src="{{ item.image.url }}" alt="" style="width: 100%;" height="100%">
+                        <img class="rounded-circle " src="{{ item.image.url }}" alt="" style="width:92px;"
+                            height="92px;">
                         {% else %}
                         <img class="card-img-top" src="{% static 'blog/media/pc.jpg' %}" alt="">
                         {% endif %}
@@ -77,6 +87,51 @@
     </div>
     {% endfor %}
     {% endif %}
+    {% if hide %}
+    <div class=" col-sm-2">
+        <div class="card" style="background: transparent; border:none">
+            <div class="card-body p-0" style="background: transparent;">
+                <a href="{% url 'blog-friendlist' userprofile_data.id  %}">
+                    <div class=" card text-left" style="background: transparent; border:none;">
+                        <p style=" margin-top:40px;"> Show more</p>
+                    </div>
+                </a>
+            </div>
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+
+                            <input type="file" name="profile_pic" id="profile_pic">
+                            <button class="btn btn-outline-info" type="submit" onclick="saveimages()">Update</button>
+                        </fieldset>
+                    </form>
+
+                </div>
+                <!-- <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
 
 
     <script>
@@ -115,6 +170,9 @@
                     });
                 }
             });
+        }
+        function crearimage() {
+            $("#profile_pic").val("");
         }
     </script>
 </div>

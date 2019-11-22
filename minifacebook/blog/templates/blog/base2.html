@@ -95,7 +95,8 @@
                                     </a>
                                 </div>
                                 <div class="col-sm-6 Text-center">
-                                    <a class="nav-link mb-0 pb-0" href="{% url 'blog-friendlist' %}">
+                                    <a class="nav-link mb-0 pb-0"
+                                        href="{% url 'blog-friendlist' request.session.userid  %}">
                                         <h2 class="mb-0 pb-0" style="color:#29487d"> {{ friendscount }}</h2>
                                         Friends
                                     </a>
@@ -132,6 +133,9 @@
     <script>
         //   on focuse show rhe i post button 
         $("#notes").focus(function () {
+            $("#notes").css("border", "1px solid #ccc");
+            $("#notes").css("min-height", "100px");
+            //  $("#notes").css("col", "5");
             $("#postbtn").show();
             $("#clearpostbtn").show();
         });
@@ -144,6 +148,15 @@
             $("#newcomment_" + id).focus();
         }
 
+        function clearpost() {
+            $("#notes").val("");
+            $("#notes").css("border", "none");
+            $("#notes").css("min-height", "auto");
+            $("#postbtn").hide();
+            $("#clearpostbtn").hide();
+
+
+        }
 
         $(document).ready(function () {
             $("#disply_textbox").change(function () {
@@ -405,6 +418,7 @@
             });
         }
     </script>
+
 </body>
 
 </html>

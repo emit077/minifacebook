@@ -1,23 +1,32 @@
 {% extends 'blog/base2.html' %}
 {% block base2 %}
 {% load static %}
+<style>
+    #notes {
+        width: 250px;
+        min-height: 35px;
+        overflow-y: hidden;
+    }
+</style>
 <article class="media content-section ">
     <div class="media-body">
         <div class=" row">
             <div class="col-sm-1">
-                <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg'%}"
+                <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
                     style="width: 60px;height: 60px;">
             </div>
             <div class="col-sm-10 pt-3 ml-4">
                 <textarea name="notes" id="notes" cols="" rows="1"
                     placeholder="What's on your mind , {{ request.session.name }}?"
                     style="border: none;font-size:1.2rem;width:100%"></textarea>
-                <div style="width:100%" class="text-center">
-                    <input id="postbtn" type="button " class="btn btn-outline-primary p-0" value="POST"
-                        onclick="PostBlog()" style=" display:none;" />
-                    <input id="clearpostbtn" type="button " class="btn btn-outline-primary p-0" value="CANCEL"
-                        onclick="clearpost()" style=" display:none;" />
+                <div style="width:100%" class="">
+                    <button id="postbtn" type="button " class="btn btn-outline-primary text-left" value="POST"
+                        onclick="PostBlog()" style=" display:none;">
+                        POST</button>
+                    <button id="clearpostbtn" type="button " class="btn btn-outline-warning text-right"
+                        onclick="clearpost()" style=" display:none;margin-left:80%">X</button>
                 </div>
+
             </div>
         </div>
     </div>
@@ -33,8 +42,13 @@
     <div class="media-body">
         <div class="article-metadata">
             <div class="media">
-                <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg'%}"
+                {% if pi.posted_by.image %}
+                <img class="rounded-circle account-img" src="{{ pi.posted_by.image.url }}"
                     style="width: 60px;height: 60px;">
+                {% else %}
+                <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
+                    style="width:60px;height:60px;">
+                {% endif %}
                 <div class="media-body">
                     <a class="mr-5" href="{% url 'blog-userprofile' pi.posted_by.name pi.posted_by.id %}"
                         style="font-size: 1.7rem;" onclick="userprofile({{pi.posted_by.id}})">
@@ -47,45 +61,53 @@
         <p class="article-content">{{ pi.text }}</p>
 
         <div class="container">
-            <div class=" row text-muted " style="border-top: solid 1px lightgray; padding-top: 5px;">
+            <!-- <div class=" row text-muted ">
                 <div class="col-sm-6 text-left">
                     <button type="button" class="btn" data-toggle="modal" data-target="#modelId"
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
                         {{pi.likes_count}} Like
                     </button>
                 </div>
-
-
-
                 <div class="col-sm-6 text-right">
                     <button class="btn" href="#" style="font-size:10px;"
                         onclick="CommentBy({{pi.id}})">{{pi.comments_count}} Comment</button>
                 </div>
-            </div>
+            </div>  -->
             <div class=" row text-center"
                 style="border-top: solid 1px lightgray; padding-top: 5px;border-bottom: solid 1px lightgray; padding-bottom: 5px;">
                 <div class="col-sm-6">
                     {% if pi.id in listliked  %}
                     <button class=" btn btn-outline-light" style="width: 100%;">
-                        <img src="{% static 'blog/media/icon-like-blue.png' %}"
-                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                            alt="not fond">
+                        <p class="text-muted p-0 m-0">
+                            <img src="{% static 'blog/media/icon-like-blue.png' %}"
+                                class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                alt="not fond">
+                            {{pi.likes_count}}
+                        </p>
                     </button>
                     {% else %}
                     <button class=" btn btn-outline-light" style="width: 100%;" onclick="like_post({{pi.id}})">
-                        <img src="{% static 'blog/media/icon-like-gray.png' %}"
-                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                            alt="not fond">
+                        <p class="text-muted p-0 m-0">
+                            <img src="{% static 'blog/media/icon-like-gray.png' %}"
+                                class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                alt="not fond">
+                            {{pi.likes_count}}
+                        </p>
                     </button>
                     {% endif %}
 
                     </button>
                 </div>
                 <div class="col-sm-6">
-                    <button class=" btn btn-outline-light" style="width: 100%;" onclick="changefocus({{pi.id}})">
-                        <img src="{% static 'blog/media/icon-comment.png' %}"
-                            class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                            alt="not fond">
+                    <button class=" btn btn-outline-light" style="width: 100%;" onclick="CommentBy({{pi.id}})">
+                        <p class="text-muted p-0 m-0">
+                            <img src="{% static 'blog/media/icon-comment.png' %}"
+                                class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
+                                alt="not fond">
+
+                            {{pi.comments_count}}
+                        </p>
+
                     </button>
                 </div>
 
@@ -135,4 +157,21 @@
         </div>
     </div>
 </div>
+<script>
+    $(function () {
+        $('#notes').on('keyup paste', function () {
+            var $el = $(this),
+                offset = $el.innerHeight() - $el.height();
+
+            if ($el.innerHeight() < this.scrollHeight) {
+                // Grow the field if scroll height is smaller
+                $el.height(this.scrollHeight - offset);
+            } else {
+                // Shrink the field and then re-set it to the scroll height in case it needs to shrink
+                $el.height(1);
+                $el.height(this.scrollHeight - offset);
+            }
+        });
+    });
+</script>
 {% endblock base2 %}

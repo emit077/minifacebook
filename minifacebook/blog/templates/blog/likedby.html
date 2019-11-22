@@ -1,4 +1,4 @@
-{% for item  in LB  %}
+
 <div id="mydiv_{{item.id}}" class="content" style="background-color: aliceblue;">
 	<div class="media">
 		<div class="media-body"><br>
@@ -7,4 +7,29 @@
 	</div>
 </div>
 <hr>
+
+{% for item  in LB  %}
+ {% if item.id == request.session.userid %}
+            {% else %}
+                {% if item.id in connected %}
+                    {% if item.id in friendarr %}
+                    {% comment %} {{ item.id}} {% endcomment %}
+                    <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.liked_by.id}})">Unfriend</a>
+                    {% else %}
+                        {% if item.id in myrequestarr %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.liked_by.id}})">Cancel Request</a>
+                        {% else %}
+                        {% comment %} {{ item.id}} {% endcomment %}
+                         <div class="form-group">
+                            <a href="" class="btn btn-outline-primary" onclick="accepted({{item.liked_by.id}})">Accept</a>
+                            <a href="" class="btn btn-outline-warning" onclick="reject({{item.liked_by.id}})">Reject</a>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                    {% else %}
+                     {% comment %} {{ item.id}} {% endcomment %}
+                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{item.liked_by.id}})">Add Friend</a>
+                {% endif %}
+            {% endif %}
 {% endfor  %}

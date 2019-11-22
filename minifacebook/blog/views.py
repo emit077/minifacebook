@@ -16,7 +16,7 @@ import random
 def home(request):  # home page is
     try:
         if request.session['userid']:
-            return Share(request)
+            return redirect('blog-user_post')
         return render(request, 'blog/home.html')
     except KeyError:
         pass
@@ -95,11 +95,21 @@ def registration(request):
 
 
 def register_form(request):
-    return render(request, 'blog/register.html')
+    id=request.session.get('userid', None)
+    if id:
+        return redirect('blog-user_post')
+    else:
+        return render(request, 'blog/register.html')
 
 
 def login_form(request):
-    return render(request, 'blog/login.html',{"hide":"hide"})
+    id=request.session.get('userid', None)
+    if id:
+        return redirect('blog-user_post')
+    else:
+        return render(request, 'blog/login.html',{"hide":"hide"})
+  
+        
 
 
 def verify_mobile_number(request):
@@ -254,9 +264,9 @@ def user_post(request):
         request.session['requests']=requestcount
         request.session['Frineds']=friendscount
         if data.count() > 0:
-            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked})
+            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked,'profile_data':userinfo })
         else:
-            return render(request, 'blog/share.html', {'userinfo': userinfo})
+            return render(request, 'blog/share.html', {'profile_data': userinfo})
     else:
         return redirect('blog-home')
 def Logout(request):
@@ -304,6 +314,7 @@ def SearchUser(request):
     friendarr= myfriendlist(request,id)
     friendscount=len(friendarr)
     requestcount= len(friendrequestarr)
+    profile_data= User_data.objects.get(id=id)
 
     if id:
         conarr=myconnection(request,id)
@@ -320,10 +331,10 @@ def SearchUser(request):
             except ValueError:
                 listuserdata = User_data.objects.filter(
                     name__icontains=searchTerm)
-            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr})
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data})
         else:
             listuserdata = User_data.objects.all()[:20]
-            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount})
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data})
 
     else:
         return redirect('blog-home')
@@ -365,19 +376,23 @@ def userprofile(request,name,id):
     if  myid:
         if id != None and id != "":
             profile_data = User_data.objects.get(id=id)
+            myprofile_data = User_data.objects.get(id=myid)
             connected=myconnection(request,myid)
             friendarr= myfriendlist(request,myid)
             myrequestarr=myrequest(request,myid)
             friendarrr= myfriendlist(request,id)
-            
-            myfriends= User_data.objects.filter(id__in=friendarrr)
+            hide=None
+            myfriends= User_data.objects.filter(id__in=friendarrr)[:5]
+            if myfriends.count()==5:
+                hide="Hide"
+                
         # for count------------------
             friendrequestarr=friendrequest(request,myid)
             friendarr= myfriendlist(request,myid)
             friendscount=len(friendarr)
             requestcount= len(friendrequestarr)
             # --------------------
-            return render(request, 'blog/userprofile.html', {'profile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount})
+            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide})
         else:
             messages.warning(
                     request, 'profile not found')
@@ -385,16 +400,16 @@ def userprofile(request,name,id):
         return redirect('blog-home')        
 
 
-def upadteprofile(request):
+def upadateprofile(request):
     print("updateprofile")
-    image=request.FILES["image"]
-    print(image)
+    file = request.FILES['profile_pic']
+    print(file)
     myid = request.session['userid']
     if myid:
         profile=User_data.objects.get(id=myid)
-        profile.image=image
+        profile.image=file
         profile.save()
-        return HttpResponse("image saved")
+        return redirect("blog-userprofile", profile.name ,profile.id)
     else:
         return HttpResponse("image not saved")
 
@@ -531,6 +546,7 @@ def conrequiestList(request):
         friendscount=len(friendarr)
         requestcount= len(friendrequestarr)
         # ------------------
+        profile_data=User_data.objects.get(id=id)
         friendarr =myfriendlist(request,id)
         conarr=myconnection(request,id)
         con_request = Requiest_list.objects.filter(
@@ -540,7 +556,7 @@ def conrequiestList(request):
         for item in con_request:
             arr.append(item.requested_by.id)
         userdata = User_data.objects.filter(id__in=arr)
-        return render(request, 'blog/searchlist.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+        return render(request, 'blog/friendrequest.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
         
         # return render(request, 'blog/friendrequest.html', {'userdata': userdata,})
     else:
@@ -588,8 +604,7 @@ def like_post(request):
  
 
 
-def friendlist(request):
-    id = request.session['userid']
+def friendlist(request,id):
     friendarr =myfriendlist(request,id)
     conarr=myconnection(request,id)
     print(len(friendarr))
@@ -599,15 +614,14 @@ def friendlist(request):
     friendarr= myfriendlist(request,id)
     friendscount=len(friendarr)
     requestcount= len(friendrequestarr)
+    profile_data=User_data.objects.get(id=id)
     # ----------------------
     if myfriends.count()>0:
         # return render(request, 'blog/friends.html', {'friendlist':myfriends})
-        return render(request, 'blog/searchlist.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
     else:
-        messages.warning(
-                request, 'No Ftiends Friends found')
-        return  HttpResponse('No Ftiends Friends found')
-    
+        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
+
 
 def likedby(request):
     myid = request.session['userid']
@@ -617,20 +631,21 @@ def likedby(request):
     friendscount=len(friendarr)
     requestcount= len(friendrequestarr)
     conarr=myconnection(request,myid)
+    
+    myrequestarr=myrequest(request,myid)
     # -------------
     postid = request.GET.get('id', None)
     LB = Likes.objects.filter(post_id=postid)
     # return render(request, 'blog/searchlist.html', {'data': LB,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount})
-    
-    return render(request, 'blog/likedby.html',{'LB':LB})
+    return render(request, 'blog/likedby.html',{'LB':LB,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'myrequestarr':myrequestarr})
 
 
 def commentsby(request):
     postid = request.GET.get('id', None)
     CB = Comments.objects.filter(post_id=postid)
     if CB.count() < 1:
-        result = "no momments found"
-        return JsonResponse(result, safe=False)
+        result = "no comments found"
+        # return JsonResponse(result, safe=False)
     else:
         return render(request, 'blog/commentlist.html', {'comment_list': CB})
 
