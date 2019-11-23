@@ -22,18 +22,18 @@
         <div class="media-body">
             <div class="media">
                 {% if item.liked_by.image %}
-                <img class="rounded-circle" src="{{ item.liked_by.image.url }}" style="width: 50px;height: 50px;">
+                <img class="rounded-circle" src="{{ item.liked_by.image.url }}" style="width: 30px;height: 30px;">
                 {% else %}
-                <img class="rounded-circle" src="{% static 'blog/media/pc.jpg' %}" style="width: 50px;height: 50px;">
+                <img class="rounded-circle" src="{% static 'blog/media/pc.jpg' %}" style="width: 30px;height: 30px;">
                 {% endif %}
                 <a class="ml-3 mt-2" href="{% url 'blog-userprofile' item.liked_by.name item.liked_by.id %}"
-                    style="font-size: 1.5rem;">
+                    style="font-size: .7rem;">
                     {{ item.liked_by.name}}
                 </a>
             </div>
         </div>
     </div>
-    <div class="col-sm-4 mt-1 text-center">
+    <div class="col-sm-4 mt-1 text-right">
         {% if item.liked_by.id == request.session.userid %}
         {% else %}
         {% if item.liked_by.id in connected %}
@@ -43,7 +43,7 @@
         {% else %}
         {% if item.liked_by.id in myrequestarr %}
         {% comment %} {{ item.id}} {% endcomment %}
-        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.liked_by.id}})">Cancel Request</a>
+        <a href="" class="btn btn-outline-primary p-1" onclick="cancel_req({{item.liked_by.id}})">Cancel Request</a>
         {% else %}
         {% comment %} {{ item.id}} {% endcomment %}
         <div class="form-group">

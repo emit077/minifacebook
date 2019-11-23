@@ -36,16 +36,30 @@
             {% if item.id in connected %}
             {% if item.id in friendarr %}
             {% comment %} {{ item.id}} {% endcomment %}
-            <a href="" class="btn btn-outline-primary custom_width" onclick="unfriend({{item.id}})">Unfriend</a>
+            <a href="" id="unfriend_{{item.id}}" class="btn btn-outline-primary custom_width"
+                onclick="unfriend({{item.id}})">Unfriend</a>
+            <!-- <a href="#" id="addfriend_{{item.id}}" class="btn btn-outline-primary custom_width"
+                onclick="addfriend({{item.id}})" style="display: none;">Add Friend</a> -->
+
             {% else %}
             {% if item.id in myrequestarr %}
             {% comment %} {{ item.id}} {% endcomment %}
-            <a href="" class="btn btn-outline-primary custom_width" onclick="cancel_req({{item.id}})">Cancel Request</a>
+            <a href="" id="cancel_{{item.id}}" class="btn btn-outline-primary custom_width"
+                onclick="cancel_req({{item.id}})">Cancel Request</a>
+            <!-- <a href="#" id="addfriend_{{item.id}}" class="btn btn-outline-primary custom_width"
+                onclick="addfriend({{item.id}})" style="display: none;">Add Friend</a> -->
             {% else %}
             {% comment %} {{ item.id}} {% endcomment %}
             <div class="form-group">
-                <a href="" class="btn btn-outline-primary" onclick="accepted({{item.id}})">Accept</a>
-                <a href="" class="btn btn-outline-warning" onclick="reject({{item.id}})">Reject</a>
+                <a href="" id="accept_{{item.id}}" class="btn btn-outline-primary"
+                    onclick="accepted({{item.id}})">Accept</a>
+                <a href="#" id="reject_{{item.id}}" class="btn btn-outline-warning"
+                    onclick="reject({{item.id}})">Reject</a>
+                <!--  <a href="#" id="addfriend_{{item.id}}" class="btn btn-outline-primary custom_width"
+                    onclick="addfriend({{item.id}})" style="display: none;">Add Friend</a><a href="#" id="reject_{{item.id}}" class="btn btn-outline-warning"
+                    onclick="reject({{item.id}})">Reject</a>
+                <a href="#" id="addfriend_{{item.id}}" class="btn btn-outline-primary custom_width"
+                    onclick="addfriend({{item.id}})" style="display: none;">Add Friend</a> -->
             </div>
             {% endif %}
             {% endif %}

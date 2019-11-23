@@ -14,28 +14,9 @@
     <script src="{% static 'blog/js/ajax.js' %}"></script>
     <script src="{% static 'blog/js/iziToast.min.js' %}"></script>
     <!-- cdn for toasts -->
-
-
     <style>
-        .jumbotron {
-            width: 80%;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-            padding: 5%;
-        }
-
         a {
             color: #29487d;
-        }
-
-        btn {
-            cursor: pointer;
-        }
-
-        .custom_width {
-            width: 73%
         }
     </style>
 </head>
@@ -48,7 +29,8 @@
         <a class="navbar-brand" href="{% url 'blog-user_post' %}">Mini App</a>
         <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px">
             <div style=" margin-left:25%;width:50%">
-                <form action="{% url 'blog-SearchUser' %}" method="POST" name="search_form">
+                <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form"
+                    onsubmit=" return vlidatesearch()">
                     {% csrf_token %}
                     <input class="form-control mr-sm-2 ml-5 ext-center" type="text" id="searchterm" name="searchterm"
                         placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
@@ -58,7 +40,8 @@
             </div>
             <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:20%">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" onclick="logout()"> Logout</a>
+                    <a class="nav-link" href="{%url 'blog-delete'%}"> Logout</a>
+                    <!-- <a class="nav-link" href="#" onclick="logout()"> Logout</a> -->
                 </li>
             </ul>
         </div>
@@ -122,7 +105,6 @@
 
 
 
-
     <!-- for search results -->
     <div style="text-align:center;width:60%; ">
         <div id="searchresult"
@@ -135,6 +117,20 @@
     <div id="showhere" style="z-index: 1;">
     </div>
     <script>
+        function vlidatesearch() {
+            var searchterm = document.forms["search_form"]["searchterm"].value;
+            if (searchterm == null || searchterm == "" ||
+                searchterm == undefined) {
+
+                $("#PostHelpId").text("Please Enter Something To Post")
+                return false;
+            }
+
+
+        }
+
+
+
         //   on focuse show rhe i post button 
         $("#notes").focus(function () {
             $("#notes").css("border", "1px solid #ccc");
@@ -142,6 +138,7 @@
             //  $("#notes").css("col", "5");
             $("#postbtn").show();
             $("#clearpostbtn").show();
+            $("#feed_image").show();
         });
         // $("#notes").focusout(function () {
         //     $("#postbtn").hide();
@@ -196,11 +193,26 @@
                     iziToast.info({
                         // title: 'Caution',
                         message: data,
+                        position: topRight,
                     });
                 }
             });
 
         }
+
+        function postfeed() {
+            var file = document.forms["feed_form"]["feed_image"].value;
+            var notes = document.forms["feed_form"]["notes"].value;
+            if (notes == null || notes == "" ||
+                notes == undefined) {
+                $("#PostHelpId").text("Please Enter Something To Post")
+                return false;
+            }
+        }
+
+
+
+
         function PostBlog() {
             // var title = $('#title').val();
             //   alert('notes');
@@ -256,6 +268,9 @@
                     // alert(data);
                     $("#showcomments_" + id).html(data);
                     $("#showcomments_" + id).show();
+                    $("#newcomment_" + id).focus();
+
+
                 }
             });
 
@@ -272,7 +287,7 @@
             if (newcomment == null ||
                 newcomment == undefined ||
                 newcomment.length == 0) {
-                $("#commentHelpId").text("Please Something to Commment")
+                $("#commentHelpId_" + id).text("Please Write Something to Commment")
                 return false;
             }
             $.ajax({
@@ -284,6 +299,7 @@
                     $("#showcomments_" + id).html(data)
                     $('#newcomment_' + id).val("");
                     iziToast.success({
+                        position: topRight,
                         message: "comment saved",
                     });
                 }
@@ -362,6 +378,7 @@
                     $("#mydiv_" + id).focus();
                     iziToast.info({
                         message: data,
+                        position: topRight,
                     });
                 }
             });
@@ -374,6 +391,7 @@
                 success: function (data) {
                     $("#mydiv_" + id).focus();
                     iziToast.info({
+                        position: topRight,
                         message: data,
                     });
                 }
@@ -388,6 +406,7 @@
                 success: function (data) {
                     $("#mydiv_" + id).focus();
                     iziToast.info({
+                        position: topRight,
                         message: data,
                     });
                 }
@@ -402,6 +421,7 @@
                     $("#mydiv_" + id).focus();
                     iziToast.info({
                         message: data,
+                        position: topRight,
                     });
                 }
             });
@@ -417,6 +437,7 @@
                     $("#mydiv_" + id).focus();
                     iziToast.info({
                         message: data,
+                        position: topRight,
                     });
                 }
             });
@@ -426,3 +447,21 @@
 </body>
 
 </html>
+<div class="modal fade" id="modelId2" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Liked By</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modal-container-list">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

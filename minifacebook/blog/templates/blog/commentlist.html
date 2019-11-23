@@ -1,18 +1,24 @@
 {% load static %}
 {% for item in comment_list %}
-<div class="row">
-    <div class="col-sm-12 text-justify rounded-lg" style="background-color: aliceblue;">
-        <div class="media">
-            <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg'%}"
-                style="width: 50px;height: 50px;">
-            <div class="media-body">
-                <a href="#" onclick="userprofile({{item.comments_by.id}})" style="">{{item.comments_by.name}}</a>
-                {{item.comment}}
-                <p class="card-text text-muted">
-                    {{item.date_time|date:"F d" }}
-                </p>
-            </div>
+<div class="row ml-2 pl-2 mr-5 pr-4">
+    <div class="col-sm-12 text-justify rounded-lg p-2">
+        <div class="chip mb-0 ">
+            <img src="{{ item.comments_by.image.url }}" alt="Person" width="96" height="96">
+            <a class=""
+                href="{% url 'blog-userprofile' item.comments_by.name item.comments_by.id %}">{{item.comments_by.name}}</a>
         </div>
+        <p class="text-muted ml-4 mb-0 pb-0 ">
+            {{item.comment}}
+        </p>
+        <p class="ml-4" style="font-size:10px; line-height:10px ;">
+            {% comment %} {% if item.date_time.year == today.year and item.date_time.month == today.month and item.date_time.day == today.day %} {% endcomment %}
+            {% if item.date_time.date == today.date %}
+            {{item.date_time|date:"P" }}
+
+            {% else %}
+            {{item.date_time|date:"j M , y" }}
+            {% endif %} 
+        </p>
     </div>
-</div><br>
+</div>
 {% endfor %}

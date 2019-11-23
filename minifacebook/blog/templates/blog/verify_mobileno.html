@@ -7,9 +7,10 @@
     {% endfor%}
     {% endif %}
     <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Enter OTP</legend>
+        <legend class="border-bottom mb-4">Verify Your Mobile No</legend>
 
     </fieldset>
+     {% comment %} <p>We sent you otp On </p> {% endcomment %}
     <form action="{% url 'blog-verify_mobile_number' %}" method="POST" onsubmit="return validate_this_otp()"
         name="OTPform">
         {% csrf_token %}
@@ -42,8 +43,8 @@
         $("#otpHelpId").text("")
         if (mobile == null ||
             mobile == undefined ||
-            mobile.length < 10) {
-            $("#otpHelpId").text("Please Enter a valid Mobile Number")
+            mobile.length < 4) {
+            $("#otpHelpId").text("Please Enter a valid OTP")
             // alert("Please Enter a valid Mobile Number\n");
             return false;
         } if (otp == null ||

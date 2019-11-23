@@ -15,12 +15,12 @@
         <div class="form-group">
             <label for="name">Name</label>
             <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelpId"
-                placeholder="Enter your name">
+                placeholder="Enter your name" value="{{ name }}">
             <small id="nameHelpId" class="form-text   " style="color: #ad3535;"></small>
 
             <label for="mobile">Mobile Number</label>
             <input type="text" class="form-control numbers_only" name="mobile" id="mobile" aria-describedby="mobHelpId"
-                placeholder=" Your Mobile  Number" maxlength="10">
+                placeholder=" Your Mobile  Number" maxlength="10" value="{{mobile_no}}">
             <small id="mobHelpId" class="form-text   " style="color: #ad3535;"></small>
 
             <label for="password">Password</label>

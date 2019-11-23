@@ -28,7 +28,7 @@
     </div>
     <div class=" text-right" style="width: 100%;">
         {% if request.session.userid == userprofile_data.id %}
-        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modelId"
+        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modelId2"
             onclick="crearimage()">
             Edit Profile
         </button>
@@ -60,121 +60,151 @@
     </div>
 
 </div>
-<div class="row">
+<div class="row m-2">
     {% if friendlist %}
-    {% for item  in friendlist  %}
-    <div class=" col-sm-2">
-        <div class="card" style="background: transparent; border:none">
-            <img class="card-img-top" data-src="holder.js/100x180/?text=Image cap" alt="">
-            <div class="card-body p-0" style="background: transparent;">
+    <div class=" col-sm-12  m-0 ">
+        <div>
+            Frineds
+        </div>
+        <div class="row pl-2 ">
+
+
+            {% for item  in friendlist  %}
+            <div class="col-sm-2 m-0 p-2 ">
                 <a href="{% url 'blog-userprofile' item.name item.id  %}">
-                    <div class="card text-left" style="background: transparent; border:none">
-                        {% if item.image %}
-                        <img class="rounded-circle " src="{{ item.image.url }}" alt="" style="width:92px;"
-                            height="92px;">
-                        {% else %}
-                        <img class="card-img-top" src="{% static 'blog/media/pc.jpg' %}" alt="">
-                        {% endif %}
-                        <div class="card-body p-0 text-center">
-                            <p class="card-text">{{item.name}}</p>
+                    <div class="card text-left">
+                        <img class="card-img-top" src="{{ item.image.url}}" alt="" style="height: 100px;">
+                        <div class="card-body p-0 m-0 pl-1 text-center">
+                            <strong class="card-title ">{{item.name}}</strong>
                         </div>
                     </div>
-
                 </a>
             </div>
-            </ul>
+            {% endfor %}
+            {% if hide %}
+            <div class="col-sm-4 m-0 p-1 " style="background: transparent;">
+                <a href="{% url 'blog-friendlist' userprofile_data.id %}">
+                    <div class="pt-5 text-left" style="height: 100px;" style="background: transparent;">
+                        <strong class="card-title pt-5 mt-5">Show more</strong>
+                    </div>
+            </div>
+            </a>
+            {% endif %}
         </div>
+
     </div>
-    {% endfor %}
     {% endif %}
-    {% if hide %}
-    <div class=" col-sm-2">
-        <div class="card" style="background: transparent; border:none">
-            <div class="card-body p-0" style="background: transparent;">
-                <a href="{% url 'blog-friendlist' userprofile_data.id  %}">
-                    <div class=" card text-left" style="background: transparent; border:none;">
-                        <p style=" margin-top:40px;"> Show more</p>
+    {% if imagelist %}
+
+    <div class=" col-sm-0 m-0 ">
+        <div>
+            Images
+        </div>
+        <div class="row pl-2">
+
+            {% for item  in imagelist  %}
+            <div class="col-sm-4 m-0 p-2 ">
+                <a href="{% url 'blog-userprofile' item.name item.id  %}">
+                    <div class="card text-left">
+                        <img class="card-img-top" src="{{ item.image.url}}" alt="" style="height: 100px;">
+                        <div class="card-body p-0 m-0 pl-1 text-center">
+                            <strong class="card-title ">{{item.name}}</strong>
+                        </div>
                     </div>
                 </a>
             </div>
-            </ul>
+            {% endfor %}
+            {% if imagelistcount ==  1%}
+            <div class="col-sm-4 m-0 p-1 " style="background: transparent;">
+                <a href="{% url 'blog-friendlist' userprofile_data.id %}">
+                    <div class="pt-5 text-left" style="height: 100px;" style="background: transparent;">
+                        <strong class="card-title pt-5 mt-5">Show more</strong>
+                    </div>
+            </div>
+            </a>
+            {% endif %}
         </div>
     </div>
     {% endif %}
 
-    <div class="modal fade" id="modelId" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Profile</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <fieldset class="form-group">
+</div>
 
-                            <input type="file" name="profile_pic" id="profile_pic">
-                            <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button>
-                        </fieldset>
-                    </form>
 
-                </div>
-                <!-- <div class="modal-footer">
+
+<div class="modal fade" id="modelId2" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <fieldset class="form-group">
+
+                        <input type="file" name="profile_pic" id="profile_pic">
+                        <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button>
+                    </fieldset>
+                </form>
+
+            </div>
+            <!-- <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 </div> -->
-            </div>
         </div>
     </div>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-        crossorigin="anonymous"></script>
+</div>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
 
 
 
-    <script>
-        function saveimages() {
-            formdata = new FormData();
-            var file = $("#profile_pic").files[0];
-            if (formdata) {
-                formdata.append("image", file);
-                $.ajax({
-                    type: "POST",
-                    url: "{% url 'blog-upadteprofile' %}",
-                    data: formdata,
-                    processData: false,
-                    contentType: false,
-                    success: function (data) {
-                        alert(data);
-                        $("#mainbody").html(data);
-
-                    }
-                });
-            }
-        }
-
-
-        function con_request(id) {
-            // alert(id);
+<script>
+    function saveimages() {
+        formdata = new FormData();
+        var file = $("#profile_pic").files[0];
+        if (formdata) {
+            formdata.append("image", file);
             $.ajax({
-                type: 'GET',
-                url: "{% url 'blog-con_request' %}",
-                data: { 'requested_to': id },
+                type: "POST",
+                url: "{% url 'blog-upadteprofile' %}",
+                data: formdata,
+                processData: false,
+                contentType: false,
                 success: function (data) {
-                    iziToast.success({
-                        // title: 'Caution',
-                        message: data,
-                    });
+                    alert(data);
+                    $("#mainbody").html(data);
+
                 }
             });
         }
-        function crearimage() {
-            $("#profile_pic").val("");
-        }
-    </script>
-</div>
+    }
+
+
+    function con_request(id) {
+        // alert(id);
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'blog-con_request' %}",
+            data: { 'requested_to': id },
+            success: function (data) {
+                iziToast.success({
+                    // title: 'Caution',
+                    position: 'topRight',
+                    message: data,
+                });
+            }
+        });
+    }
+    function crearimage() {
+        $("#profile_pic").val("");
+    }
+</script>
+
 {% if request.session.userid == userprofile_data.id %}
 <article class="media content-section mt-5">
     <div class="media-body">
@@ -188,11 +218,12 @@
                     placeholder="What's on your mind , {{ request.session.name }}?"
                     style="border: none;font-size:1.2rem;width:100%"></textarea>
                 <div style="width:100%" class="">
-                    <button id="postbtn" type="button " class="btn btn-outline-primary text-left" value="POST"
-                        onclick="PostBlog()" style=" display:none;">
+                    <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
+                        value="POST" onclick="PostBlog()" style=" display:none;">
                         POST</button>
-                    <button id="clearpostbtn" type="button " class="btn btn-outline-warning text-right"
-                        onclick="clearpost()" style=" display:none;margin-left:80%">X</button>
+                    <button id="clearpostbtn" type="button " class="btn btn-outline-light p-0 pl-5 pr-5"
+                        onclick="clearpost()"
+                        style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
                 </div>
 
             </div>
@@ -308,12 +339,14 @@
 </article>
 {% endfor %}
 {% else %}
+{% if request.session.userid == userprofile_data.id %}
+
 <div style="text-align-last: center;">
     <h4 style="color: 0373e36e !important;"> No post yet write a post </h4>
 
 </div>
 {% endif %}
-
+{% endif %}
 
 
 
