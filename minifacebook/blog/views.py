@@ -153,6 +153,11 @@ def login(request):
             request, 'please Enter  Mobile no')
         return redirect('blog-login_form')
     try:
+        users = User_data.objects.filter(mobile_no=mobile_no,Isverify=False)
+        if users.count()>0:
+            sent=sentOTP_new(request,mobile_no)
+            messages.success(request, " Before login  Please Verify your  Mobile no")
+            return render(request, 'blog/verify_mobileno.html',{'mobile_no':mobile_no})
         user = User_data.objects.filter(mobile_no=mobile_no,Isverify=True)
         if user.count() > 0:
             userdata = User_data.objects.get(mobile_no=mobile_no,Isverify=True)
@@ -239,6 +244,29 @@ def validateOTP(request):
             request, 'invalid mobile no')
         return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
    
+
+def sentOTP_new(request, mobile_no):
+    if mobile_no:
+        listuser= OTP.objects.filter(mobile_no=mobile_no)
+        randomOTP = random.randint(1000, 9999)
+        print(randomOTP)
+        print(listuser.count())
+        if listuser.count()==0:
+            otps=OTP()
+            otps.mobile_no=mobile_no
+            otps.otp=randomOTP
+            otps.save()
+            return randomOTP
+            for item in listuser:
+                item.delete()
+            print("else")
+            otps=OTP()
+            otps.mobile_no=mobile_no
+            otps.otp=randomOTP
+            otps.save()
+            return  randomOTP
+    else:
+        return False
         
     
 def newpassword(request):
@@ -329,7 +357,8 @@ def Save_notes(request):
     file = request.FILES.get('feed_image',None)
     
     # if request.GET['type'] == "text":
-    postdata.text = notes
+    if notes:
+        postdata.text = notes
     if file:
         postdata.image = file
     postdata.posted_on = timezone.now()
@@ -439,7 +468,7 @@ def userprofile(request,name,id):
             # imagelist=imagefeeds(request,id)
             # for feeds
             feeds=feed_for_profie(request,id)
-            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide,'feeds':feeds,'listliked':listliked })
+            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide,'feeds':feeds,'listliked':listliked ,'today':timezone.now()})
         else:
             messages.warning(
                     request, 'profile not found')
@@ -626,7 +655,7 @@ def comment_save(request):
         PD.comments_count=PD.comments_count+1
         PD.save()
         CB=Comments.objects.filter(post_id=id).order_by('-date_time')
-        return render(request, 'blog/commentlist.html', {'comment_list': CB})
+        return render(request, 'blog/commentlist.html', {'comment_list': CB,'today':timezone.now()})
 
     # return Share(request)
 
@@ -645,7 +674,7 @@ def like_post(request):
         if PDs.count()>0:
             PD= Posted_data.objects.get(id=id)
             PD.likes_count=int(PD.likes_count)+1
-            PD.save()
+            PD.save() 
             return HttpResponse("liked")
     else:
         return HttpResponse("already liked")

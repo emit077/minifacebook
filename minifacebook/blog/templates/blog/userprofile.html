@@ -9,16 +9,15 @@
 <div class="content-section ">
     <div class="media profile" style=" ">
         {% if userprofile_data.image %}
-        <img class="rounded-circle account-img " src="{{ userprofile_data.image.url }}">
+        <img class="rounded-circle account-img  " src="{{ userprofile_data.image.url }}"
+            style="width: 80px;height:80px;">
         {% else %}
-        <img class="rounded-circle account-img " src="{% static 'blog/media/pc.jpg' %}">
+        <img class="rounded-circle account-img  " src="{% static 'blog/media/pc.jpg' %}">
         {% endif %}
 
         {% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
-        <div class="media-body" style="height: 130px">
-
-
-            <h2 class="account-heading mt-5 pt-4">{{ userprofile_data.name }}</h2>
+        <div class="media-body" style="height:px">
+            <h3 class="account-heading mt-0 pt-4">{{ userprofile_data.name }}</h3>
             <!-- <p class="text-secondary">{{  userprofile_data.mobile_no}}</p><br> -->
 
             <!-- <legend class="border-bottom">
@@ -68,12 +67,12 @@
         </div>
         <div class="row pl-2 ">
 
-
             {% for item  in friendlist  %}
-            <div class="col-sm-2 m-0 p-2 ">
+            <div class="col-sm-2 m-0 p-2 text center ">
                 <a href="{% url 'blog-userprofile' item.name item.id  %}">
-                    <div class="card text-left">
-                        <img class="card-img-top" src="{{ item.image.url}}" alt="" style="height: 100px;">
+                    <div class="card text-center">
+                        <img class="card-img-top" src="{{ item.image.url}}" alt=""
+                            style="height: 70px;width:90%; margin-left:5%; margin-top:5%">
                         <div class="card-body p-0 m-0 pl-1 text-center">
                             <strong class="card-title ">{{item.name}}</strong>
                         </div>
@@ -84,7 +83,7 @@
             {% if hide %}
             <div class="col-sm-4 m-0 p-1 " style="background: transparent;">
                 <a href="{% url 'blog-friendlist' userprofile_data.id %}">
-                    <div class="pt-5 text-left" style="height: 100px;" style="background: transparent;">
+                    <div class="pt-5 text-left" style="height: 80px;" style="background: transparent;">
                         <strong class="card-title pt-5 mt-5">Show more</strong>
                     </div>
             </div>
@@ -141,12 +140,15 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data">
+                <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data"
+                    onsubmit="return validateimage_form()" name="imageform">
                     {% csrf_token %}
                     <fieldset class="form-group">
 
                         <input type="file" name="profile_pic" id="profile_pic">
                         <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button>
+                        <small id="ProfileHelpId" class="form-text   " style="color: #ad3535;"></small>
+
                     </fieldset>
                 </form>
 
@@ -181,6 +183,16 @@
 
                 }
             });
+        }
+    }
+    function validateimage_form() {
+
+        var image = document.forms["imageform"]["profile_pic"].value;
+        if (image == null ||
+            image == undefined ||
+            image.length == 0) {
+            $("#ProfileHelpId").text("Please Select Profile Picture to Upload")
+            return false;
         }
     }
 
@@ -241,48 +253,67 @@
         <div class="">
             <div class="media">
                 {% if pi.posted_by.image %}
-                <img class="rounded-circle account-img" src="{{ pi.posted_by.image.url }}"
-                    style="width: 60px;height: 60px;">
+                <img class="rounded-circle mr-2" src="{{ pi.posted_by.image.url }}" style="width: 30px;height: 30px;">
                 {% else %}
                 <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
-                    style="width:60px;height:60px;">
+                    style="width:40px;height:40px;">
                 {% endif %}
-                <div class="media-body">
-                    <a class="mr-5" href="{% url 'blog-userprofile' pi.posted_by.name pi.posted_by.id %}"
-                        style="font-size: 1.7rem;" onclick="userprofile({{pi.posted_by.id}})">
+                <div class="media-body mt-1">
+                    <a class="mr-2 mb-0 pb-0" href="{% url 'blog-userprofile' pi.posted_by.name pi.posted_by.id %}"
+                        style="font-size: 1rem;">
                         {{ pi.posted_by.name}}
-                    </a><br>
-                    <small class="text-muted">{{ pi.posted_on|date:"F d, Y" }}</small>
+                    </a>
+                    {% if pi.posted_on.date == today.date %}
+                    <span class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"P" }}</span>
+                    {% else %}
+                    <span class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"j M, Y" }}</span>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        <p class="article-content ml-5 mb-2">{{ pi.text }}</p>
+        <p class="article-content ml-4 pl-1 mb-2">{{ pi.text }}</p>
+        {% if pi.image %}
+        <div class="mb-1">
+            <img src="{{ pi.image.url }}" alt="" style="width: 100%;">
+
+        </div>
+        {% endif %}
 
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
-                    {% if pi.likes_count != 0 %}
                     <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId"
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
-                        {{pi.likes_count}}
+                        <span id="likecount_{{pi.id}}">
+                            {% if pi.likes_count != 0 %}
+
+                            {{pi.likes_count}}
+
+                        </span>
+
                         {% if pi.likes_count > 1 %}
                         Likes
                         {% else %}
                         Like
                         {% endif %}
-                    </button>
-                    {% endif %}
+                        {% endif %}
 
-                    {% if pi.comments_count != 0 %}
+                    </button>
+
+
                     <button class="btn ml-0 pl-0" href="#" style="font-size:10px;" onclick="CommentBy({{pi.id}})">
-                        , {{pi.comments_count}}
+                        <span id="commentcount_{{pi.id}}">
+                            {% if pi.comments_count != 0 %}
+                            {{pi.comments_count}}
+                        </span>
                         {% if pi.comments_count > 1%}
                         Comments
                         {% else %}
                         Comment
                         {% endif %}
+                        {% endif %}
+
                     </button>
-                    {% endif %}
                 </div>
                 <!-- <div class="col-sm-6 text-right">
                     <button class="btn" href="#" style="font-size:10px;"
@@ -290,7 +321,7 @@
                 </div> -->
             </div>
             <div class=" row text-center">
-                <div class="col-sm-6">
+                <div class="col-sm-6" id="">
                     {% if pi.id in listliked  %}
                     <button class=" btn btn-outline-light" style="width: 100%;">
                         <p class="text-muted p-0 m-0">
@@ -305,7 +336,7 @@
                         <p class="text-muted p-0 m-0">
                             <img src="{% static 'blog/media/icon-like-gray.png' %}"
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                                alt="not fond">
+                                alt="not fond" id="likeicon_{{pi.id}}">
                             <!-- {{pi.likes_count}} -->
                         </p>
                     </button>
@@ -332,7 +363,7 @@
         <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}" placeholder="Add Comment"
             style="width:80%; display: inline-block;">
         <button id="{{pi.id}}" class="btn btn-outline-primary my-2 my-sm-0" onclick="savecomment(this)">Comment</button>
-        <small id="commentHelpId" class="form-text   " style="color: #ad3535;"></small>
+        <small id="commentHelpId_{{pi.id}}" class="form-text" style="color: #ad3535;"></small>
         <div class="container" id="showcomments_{{pi.id}}">
         </div>
     </div>

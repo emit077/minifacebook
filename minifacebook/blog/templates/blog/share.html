@@ -23,12 +23,21 @@
                         placeholder="What's on your mind , {{ request.session.name }}?"
                         style="border: none;font-size:1.2rem;width:100%"></textarea>
 
-                    <fieldset class="form-group">
-                        <input type="file" name="feed_image" id="feed_image" style="display: none;">
+                    <fieldset class="form-group" id="feeds_image" style="display: none;">
+                        <input type="file" class="feed_images" name="feed_image" id="feed_image" style="display: none;"
+                            class="file btn btn-lg btn-outline-primary " style="width: 100%;" onchange="readURL(this);"
+                            hidden>
+                        <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
+                            Photo
+                        </label>
+                        <img id="blah" src="#" alt=" " class="p-0 ml-5" />
+                        <button class="btn btn-outline-light p-0 pl-1 pr-1"
+                            style=" color:#29487d ;border:solid lightgray 2px" id="deleteimagefeed"
+                            onclick="resetFile()">Delete</button>
                         <!-- <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button> -->
                     </fieldset>
                     <div style="width:100%" class="">
-                        <button id="postbtn" type="submit " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
+                        <button id="postbtn" type="submit " class="btn btn-primary text-left p-0 pl-5 pr-5"
                             style=" display:none;">
                             POST</button>
                         <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
@@ -55,21 +64,20 @@
         <div class="">
             <div class="media">
                 {% if pi.posted_by.image %}
-                <img class="rounded-circle account-img" src="{{ pi.posted_by.image.url }}"
-                    style="width: 40px;height: 40px;">
+                <img class="rounded-circle mr-2" src="{{ pi.posted_by.image.url }}" style="width: 30px;height: 30px;">
                 {% else %}
                 <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
                     style="width:40px;height:40px;">
                 {% endif %}
-                <div class="media-body">
-                    <a class="mr-5 mb-0 pb-0" href="{% url 'blog-userprofile' pi.posted_by.name pi.posted_by.id %}"
-                        style="font-size: 1.1rem;" onclick="userprofile({{pi.posted_by.id}})">
+                <div class="media-body mt-1">
+                    <a class="mr-2 mb-0 pb-0" href="{% url 'blog-userprofile' pi.posted_by.name pi.posted_by.id %}"
+                        style="font-size: 1rem;">
                         {{ pi.posted_by.name}}
                     </a>
                     {% if pi.posted_on.date == today.date %}
-                    <p class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"P" }}</p>
+                    <span class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"P" }}</span>
                     {% else %}
-                    <p class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"j M, Y" }}</p>
+                    <span class="text-muted mt-0 pt-0" style="font-size:0.6rem">{{ pi.posted_on|date:"j M, Y" }}</span>
                     {% endif %}
                 </div>
             </div>
@@ -85,28 +93,38 @@
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
-                    {% if pi.likes_count != 0 %}
                     <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId2"
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
-                        {{pi.likes_count}}
+                        <span id="likecount_{{pi.id}}">
+                            {% if pi.likes_count != 0 %}
+
+                            {{pi.likes_count}}
+
+                        </span>
+
                         {% if pi.likes_count > 1 %}
                         Likes
                         {% else %}
                         Like
                         {% endif %}
-                    </button>
-                    {% endif %}
+                        {% endif %}
 
-                    {% if pi.comments_count != 0 %}
+                    </button>
+
+
                     <button class="btn ml-0 pl-0" href="#" style="font-size:10px;" onclick="CommentBy({{pi.id}})">
-                        , {{pi.comments_count}}
+                        <span id="commentcount_{{pi.id}}">
+                            {% if pi.comments_count != 0 %}
+                            {{pi.comments_count}}
+                        </span>
                         {% if pi.comments_count > 1%}
                         Comments
                         {% else %}
                         Comment
                         {% endif %}
+                        {% endif %}
+
                     </button>
-                    {% endif %}
                 </div>
                 <!-- <div class="col-sm-6 text-right">
                     <button class="btn" href="#" style="font-size:10px;"
@@ -114,7 +132,7 @@
                 </div> -->
             </div>
             <div class=" row text-center">
-                <div class="col-sm-6">
+                <div class="col-sm-6" id="">
                     {% if pi.id in listliked  %}
                     <button class=" btn btn-outline-light" style="width: 100%;">
                         <p class="text-muted p-0 m-0">
@@ -129,7 +147,7 @@
                         <p class="text-muted p-0 m-0">
                             <img src="{% static 'blog/media/icon-like-gray.png' %}"
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
-                                alt="not fond">
+                                alt="not fond" id="likeicon_{{pi.id}}">
                             <!-- {{pi.likes_count}} -->
                         </p>
                     </button>

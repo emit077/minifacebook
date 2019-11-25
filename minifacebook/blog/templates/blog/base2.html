@@ -121,13 +121,44 @@
             var searchterm = document.forms["search_form"]["searchterm"].value;
             if (searchterm == null || searchterm == "" ||
                 searchterm == undefined) {
-
                 $("#PostHelpId").text("Please Enter Something To Post")
                 return false;
             }
-
-
         }
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    $('#blah')
+                        .attr('src', e.target.result)
+                        .width(40)
+                        .height(40);
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+         function resetFile() { 
+            const file = 
+                document.querySelector('.feed_images'); 
+            file.value = '';
+             $('#blah').hide(); 
+
+        } 
+
+    {% comment %} var control = $("#feed_image"),
+    clearBn = $("#deleteimagefeed");
+
+clearBn.on("click", function(){
+    control.replaceWith( control.val('').clone( true ) );
+});
+
+control.on({
+    change: function(){ console.log( "Changed" ) },
+     focus: function(){ console.log(  "Focus"  ) }
+}); {% endcomment %}
 
 
 
@@ -138,7 +169,7 @@
             //  $("#notes").css("col", "5");
             $("#postbtn").show();
             $("#clearpostbtn").show();
-            $("#feed_image").show();
+            $("#feeds_image").show();
         });
         // $("#notes").focusout(function () {
         //     $("#postbtn").hide();
@@ -155,6 +186,8 @@
             $("#notes").css("min-height", "auto");
             $("#postbtn").hide();
             $("#clearpostbtn").hide();
+            $("#feeds_image").hide();
+
 
 
         }
@@ -190,11 +223,15 @@
                 url: "{% url 'blog-like_post' %}",
                 data: { id: id },
                 success: function (data) {
-                    iziToast.info({
-                        // title: 'Caution',
-                        message: data,
-                        position: topRight,
-                    });
+                    var oldcount = $("#likecount_" + id).text();
+                    var num = num = parseFloat(oldcount);
+                    num = num + 1;
+                    if (num > 1) {
+                        $("#likecount_" + id).text(num);
+                    } else {
+                        $("#likecount_" + id).text("1 Like");
+                    }
+                    $("#likeicon_" + id).attr("src", "{% static 'blog/media/icon-like-blue.png' %}");
                 }
             });
 
@@ -203,8 +240,8 @@
         function postfeed() {
             var file = document.forms["feed_form"]["feed_image"].value;
             var notes = document.forms["feed_form"]["notes"].value;
-            if (notes == null || notes == "" ||
-                notes == undefined) {
+           var files= $("#feed_image").val();
+            if ((notes == null || notes == "" || notes == undefined)&&(files == undefined||files == null||files =="")) {
                 $("#PostHelpId").text("Please Enter Something To Post")
                 return false;
             }
@@ -282,6 +319,7 @@
             var id = $(e).attr('id');
             // var nw = ids.split("_");
             // var id = nw[1];
+            $("#commentHelpId_" + id).text(" ");
             var iserror = false;
             var newcomment = $('#newcomment_' + id).val();
             if (newcomment == null ||
@@ -298,10 +336,16 @@
                     // alert(data);
                     $("#showcomments_" + id).html(data)
                     $('#newcomment_' + id).val("");
-                    iziToast.success({
-                        position: topRight,
-                        message: "comment saved",
-                    });
+                    var oldcount = $("#commentcount_" + id).text();
+                    console.log(oldcount);
+                    var num = parseFloat(oldcount);
+
+                    num = num + 1;
+                    if (num > 1) {
+                        $("#commentcount_" + id).text(num);
+                    } else {
+                        $("#commentcount_" + id).text("1 Comment");
+                    }
                 }
             });
         }
