@@ -17,7 +17,7 @@
 
         {% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
         <div class="media-body" style="height:px">
-            <h3 class="account-heading mt-0 pt-4">{{ userprofile_data.name }}</h3>
+            <h5 class="account-heading mt-2 pt-4" style="font-size: 1.8rem;">{{ userprofile_data.name }}</h5>
             <!-- <p class="text-secondary">{{  userprofile_data.mobile_no}}</p><br> -->
 
             <!-- <legend class="border-bottom">
@@ -218,7 +218,7 @@
 </script>
 
 {% if request.session.userid == userprofile_data.id %}
-<article class="media content-section mt-5">
+<article class="media content-section ">
     <div class="media-body">
         <div class=" row">
             <div class="col-sm-1">
@@ -226,18 +226,38 @@
                     style="width: 60px;height: 60px;">
             </div>
             <div class="col-sm-10 pt-3 ml-4">
-                <textarea name="notes" id="notes" cols="" rows="1"
-                    placeholder="What's on your mind , {{ request.session.name }}?"
-                    style="border: none;font-size:1.2rem;width:100%"></textarea>
-                <div style="width:100%" class="">
-                    <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
-                        value="POST" onclick="PostBlog()" style=" display:none;">
-                        POST</button>
-                    <button id="clearpostbtn" type="button " class="btn btn-outline-light p-0 pl-5 pr-5"
-                        onclick="clearpost()"
-                        style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
-                </div>
+                <form action="{% url 'blog-Save_notes' %}" method="POST" onsubmit="return postfeed()"
+                    enctype="multipart/form-data" name=feed_form>
+                    {% csrf_token %}
+                    <textarea name="notes" id="notes" cols="" rows="1"
+                        placeholder="What's on your mind , {{ request.session.name }}?"
+                        style="border: none;font-size:1.2rem;width:100%"></textarea>
 
+                    <fieldset class="form-group" id="feeds_image" style="display: none;">
+                        <input type="file" class="feed_images" name="feed_image" id="feed_image" style="display: none;"
+                            class="file btn btn-lg btn-outline-primary " style="width: 100%;" onchange="readURL(this);"
+                            hidden>
+                        <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
+                            Photo
+                        </label>
+                        <img id="blah" src="#" alt=" " class="p-0 ml-5" />
+                        <button class="btn btn-outline-light p-0 pl-1 pr-1"
+                            style=" color:#29487d ;border:solid lightgray 2px;display:none;" id="deleteimagefeed"
+                            onclick="resetFile()">Delete</button>
+                        <!-- <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button> -->
+                    </fieldset>
+                    <div style="width:100%" class="">
+                        <button id="postbtn" type="submit " class="btn btn-primary text-left p-0 pl-5 pr-5"
+                            style=" display:none;">
+                            POST</button>
+                        <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
+                                onclick="PostBlog()" style=" display:none;">
+                                POST</button> -->
+                        <button id="clearpostbtn" type="button " class="btn btn-outline-light p-0 pl-5 pr-5"
+                            onclick="clearpost()"
+                            style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -282,7 +302,7 @@
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
-                    <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId"
+                    <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId   "
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
                         <span id="likecount_{{pi.id}}">
                             {% if pi.likes_count != 0 %}
