@@ -1,74 +1,68 @@
 {% extends 'blog/base2.html' %}
 {% block base2 %}
 {% load static %}
-<!-- <style>
-    .profile {
-        background-image: url("{% static 'blog/media/pc.jpg' %}");
-    }
-</style> -->
-<div class="content-section ">
-    <div class="media profile" style=" ">
-        {% if userprofile_data.image %}
-        <img class="rounded-circle account-img  " src="{{ userprofile_data.image.url }}"
-            style="width: 80px;height:80px;">
-        {% else %}
-        <img class="rounded-circle account-img  " src="{% static 'blog/media/pc.jpg' %}">
-        {% endif %}
 
-        {% comment %} {{connected}}f{{friendarr}}m{{myrequestarr}} {% endcomment %}
-        <div class="media-body" style="height:px">
-            <h5 class="account-heading mt-2 pt-4" style="font-size: 1.8rem;">{{ userprofile_data.name }}</h5>
-            <!-- <p class="text-secondary">{{  userprofile_data.mobile_no}}</p><br> -->
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<div class="container">
+    <div class="fb-profile">
+        <img align="left" class="fb-image-lg" src="{{ userprofile_data.coverpicture.url }}"
+            alt="Profile image example" />
+        <img align="left" class="fb-image-profile thumbnail" src="{{ userprofile_data.image.url }}" alt="Profile image"
+            style="border:solid lightgray 2px;border-redius:5px;" />
+        <div class="fb-profile-text text-left ">
+            <strong class="text-left" style="font-size: 1.7rem; margin-right:25%">{{ userprofile_data.name }}</strong>
+            <div class="text-right">
+                {% if request.session.userid == userprofile_data.id %}
+                <button type="button" class="btn btn-primary p-1 pl-2 pr-2" data-toggle="modal" data-target="#modelId2"
+                    onclick="crearimage()">
+                    Edit Profile
+                </button>
+                {% endif %}
 
-            <!-- <legend class="border-bottom">
-        <h3 class="account-heading" style="">{{ userprofile_data.name }}</h3>
-    </legend> -->
+                {% if request.session.userid != userprofile_data.id %}
+
+                {% if userprofile_data.id in connected %}
+                {% if userprofile_data.id in friendarr %}
+                {% comment %} {{ item.id}} {% endcomment %}
+                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
+                    onclick="unfriend({{userprofile_data.id}})">Unfriend</a>
+                {% else %}
+                {% if userprofile_data.id in myrequestarr %}
+                {% comment %} {{ item.id}} {% endcomment %}
+                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
+                    onclick="cancel_req({{userprofile_data.id}})">Cancel
+                    Request</a>
+                {% else %}
+                {% comment %} {{ item.id}} {% endcomment %}
+                <div class="form-group">
+                    <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
+                        onclick="accepted({{userprofile_data.id}})">Accept</a>
+                    <a href="" class="btn btn-outline-warning  p-1 pl-2 pr-2"
+                        onclick="reject({{userprofile_data.id}})">Reject</a>
+                </div>
+                {% endif %}
+                {% endif %}
+                {% else %}
+                {% comment %} {{ item.id}} {% endcomment %}
+                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
+                    onclick="addfriend({{userprofile_data.id}})">Add Friend</a>
+                {% endif %}
+                {% endif %}
+            </div>
         </div>
     </div>
-    <div class=" text-right" style="width: 100%;">
-        {% if request.session.userid == userprofile_data.id %}
-        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#modelId2"
-            onclick="crearimage()">
-            Edit Profile
-        </button>
-        {% endif %}
-
-        {% if request.session.userid != userprofile_data.id %}
-
-        {% if userprofile_data.id in connected %}
-        {% if userprofile_data.id in friendarr %}
-        {% comment %} {{ item.id}} {% endcomment %}
-        <a href="" class="btn btn-outline-primary" onclick="unfriend({{userprofile_data.id}})">Unfriend</a>
-        {% else %}
-        {% if userprofile_data.id in myrequestarr %}
-        {% comment %} {{ item.id}} {% endcomment %}
-        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{userprofile_data.id}})">Cancel Request</a>
-        {% else %}
-        {% comment %} {{ item.id}} {% endcomment %}
-        <div class="form-group">
-            <a href="" class="btn btn-outline-primary" onclick="accepted({{userprofile_data.id}})">Accept</a>
-            <a href="" class="btn btn-outline-warning" onclick="reject({{userprofile_data.id}})">Reject</a>
-        </div>
-        {% endif %}
-        {% endif %}
-        {% else %}
-        {% comment %} {{ item.id}} {% endcomment %}
-        <a href="" class="btn btn-outline-primary" onclick="addfriend({{userprofile_data.id}})">Add Friend</a>
-        {% endif %}
-        {% endif %}
-    </div>
-
-</div>
-<div class="row m-2">
+</div><br>
+<!-- </div> -->
+<div class="row">
     {% if friendlist %}
-    <div class=" col-sm-12  m-0 ">
+    <div class=" col-12  m-0 ">
         <div>
-            Frineds
+            Friends
         </div>
         <div class="row pl-2 ">
 
             {% for item  in friendlist  %}
-            <div class="col-sm-2 m-0 p-2 text center ">
+            <div class="col-2 m-0 p-2 text center ">
                 <a href="{% url 'blog-userprofile' item.name item.id  %}">
                     <div class="card text-center">
                         <img class="card-img-top" src="{{ item.image.url}}" alt=""
@@ -81,7 +75,7 @@
             </div>
             {% endfor %}
             {% if hide %}
-            <div class="col-sm-4 m-0 p-1 " style="background: transparent;">
+            <div class="col-4 m-0 p-1 " style="background: transparent;">
                 <a href="{% url 'blog-friendlist' userprofile_data.id %}">
                     <div class="pt-5 text-left" style="height: 80px;" style="background: transparent;">
                         <strong class="card-title pt-5 mt-5">Show more</strong>
@@ -95,14 +89,14 @@
     {% endif %}
     {% if imagelist %}
 
-    <div class=" col-sm-0 m-0 ">
+    <div class=" col-0 m-0 ">
         <div>
             Images
         </div>
         <div class="row pl-2">
 
             {% for item  in imagelist  %}
-            <div class="col-sm-4 m-0 p-2 ">
+            <div class="col-4 m-0 p-2 ">
                 <a href="{% url 'blog-userprofile' item.name item.id  %}">
                     <div class="card text-left">
                         <img class="card-img-top" src="{{ item.image.url}}" alt="" style="height: 100px;">
@@ -114,7 +108,7 @@
             </div>
             {% endfor %}
             {% if imagelistcount ==  1%}
-            <div class="col-sm-4 m-0 p-1 " style="background: transparent;">
+            <div class="col-4 m-0 p-1 " style="background: transparent;">
                 <a href="{% url 'blog-friendlist' userprofile_data.id %}">
                     <div class="pt-5 text-left" style="height: 100px;" style="background: transparent;">
                         <strong class="card-title pt-5 mt-5">Show more</strong>
@@ -144,10 +138,26 @@
                     onsubmit="return validateimage_form()" name="imageform">
                     {% csrf_token %}
                     <fieldset class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelpId"
+                            placeholder="Enter your name" value="{{ request.session.name }}">
+                        <small id="nameHelpId" class="form-text" style="color: #ad3535;"></small>
+                        <input type="file" name="profile_pic" id="profile_pic" class="btn btn-primary profile_pic"
+                            onchange="readURL(this)" hidden>
+                        <label for="profile_pic" class="btn btn-primary">Upload Profile Picture</label>
+                        <img id="blah" src="#" alt=" " class="p-0 ml-5" />
+                        <button class="btn btn-outline-light p-0 pl-1 pr-1" type="button"
+                            style=" color:#29487d ;border:solid lightgray 2px;display:none;" id="deleteimagefeed"
+                            onclick="resetFile2()">Delete</button><br>
 
-                        <input type="file" name="profile_pic" id="profile_pic">
-                        <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button>
-                        <small id="ProfileHelpId" class="form-text   " style="color: #ad3535;"></small>
+                        <input type="file" name="cover_image" id="cover_image" class="btn btn-primary profile_pic"
+                            hidden>
+                        <label for="cover_image" class="btn btn-primary">Upload Cover Picture</label><br>
+
+
+                        <button class="btn btn-outline-primary" type="submit">Update</button>
+
+                        <small id="ProfileHelpId" class="form-text" style="color: #ad3535;"></small>
 
                     </fieldset>
                 </form>
@@ -188,9 +198,10 @@
     function validateimage_form() {
 
         var image = document.forms["imageform"]["profile_pic"].value;
-        if (image == null ||
+        var name = document.forms["imageform"]["name"].value;
+        if ((image == null ||
             image == undefined ||
-            image.length == 0) {
+            image.length == 0) && (name == null || name == "" || name == undefined || name.length == 0)) {
             $("#ProfileHelpId").text("Please Select Profile Picture to Upload")
             return false;
         }
@@ -221,11 +232,11 @@
 <article class="media content-section ">
     <div class="media-body">
         <div class=" row">
-            <div class="col-sm-1">
+            <div class="col-1">
                 <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
                     style="width: 60px;height: 60px;">
             </div>
-            <div class="col-sm-10 pt-3 ml-4">
+            <div class="col-10 pt-3 ml-4">
                 <form action="{% url 'blog-Save_notes' %}" method="POST" onsubmit="return postfeed()"
                     enctype="multipart/form-data" name=feed_form>
                     {% csrf_token %}
@@ -291,7 +302,7 @@
                 </div>
             </div>
         </div>
-        <p class="article-content ml-4 pl-1 mb-2">{{ pi.text }}</p>
+        <p class="article-content ml-5 mb-2">{{ pi.text }}</p>
         {% if pi.image %}
         <div class="mb-1">
             <img src="{{ pi.image.url }}" alt="" style="width: 100%;">
@@ -302,7 +313,7 @@
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
-                    <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId   "
+                    <button type="button" class="btn mr-0 pr-0" data-toggle="modal" data-target="#modelId2"
                         onclick="likedby({{pi.id}})" style="font-size:10px;">
                         <span id="likecount_{{pi.id}}">
                             {% if pi.likes_count != 0 %}
@@ -341,7 +352,7 @@
                 </div> -->
             </div>
             <div class=" row text-center">
-                <div class="col-sm-6" id="">
+                <div class="col-6" id="">
                     {% if pi.id in listliked  %}
                     <button class=" btn btn-outline-light" style="width: 100%;">
                         <p class="text-muted p-0 m-0">
@@ -352,7 +363,8 @@
                         </p>
                     </button>
                     {% else %}
-                    <button class=" btn btn-outline-light" style="width: 100%;" onclick="like_post({{pi.id}})">
+                    <button id="inactivebtn_{{pi.id}}" class=" btn btn-outline-light" style="width: 100%;"
+                        onclick="like_post({{pi.id}})">
                         <p class="text-muted p-0 m-0">
                             <img src="{% static 'blog/media/icon-like-gray.png' %}"
                                 class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}"
@@ -364,7 +376,7 @@
 
                     </button>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-6">
                     <button class=" btn btn-outline-light" style="width: 100%;" onclick="CommentBy({{pi.id}})">
                         <p class="text-muted p-0 m-0">
                             <img src="{% static 'blog/media/icon-comment.png' %}"
@@ -380,10 +392,16 @@
             </div>
         </div>
         <br>
-        <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}" placeholder="Add Comment"
-            style="width:80%; display: inline-block;">
-        <button id="{{pi.id}}" class="btn btn-outline-primary my-2 my-sm-0" onclick="savecomment(this)">Comment</button>
-        <small id="commentHelpId_{{pi.id}}" class="form-text" style="color: #ad3535;"></small>
+        <div class="row text-left">
+            <div class="col-9 m-0">
+                <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}" placeholder="Add Comment">
+                <small id="commentHelpId_{{pi.id}}" class="form-text" style="color: #ad3535;"></small>
+
+            </div>
+            <div class="col-3 m-0 p-0">
+                <button id="{{pi.id}}" class="btn btn-outline-primary" onclick="savecomment(this)">Comment</button>
+            </div>
+        </div>
         <div class="container" id="showcomments_{{pi.id}}">
         </div>
     </div>

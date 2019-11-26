@@ -324,8 +324,10 @@ def user_post(request):
         friendscount= len(arr)
         request.session['requests']=requestcount
         request.session['Frineds']=friendscount
+        listuser_not=notconnected(request,id)
+        randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
         if data.count() > 0:
-            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked,'profile_data':userinfo ,'today':timezone.now()})
+            return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked,'profile_data':userinfo ,'today':timezone.now(),'randomuser':randomuser})
         else:
             return render(request, 'blog/share.html', {'profile_data': userinfo})
     else:
@@ -399,7 +401,9 @@ def SearchUser(request):
             except ValueError:
                 listuserdata = User_data.objects.filter(
                     name__icontains=searchTerm)
-            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data,'searchterm':searchTerm})
+            listuser_not=notconnected(request,id)
+            randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
+            return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data,'searchterm':searchTerm,'randomuser':randomuser})
         # else:
         #     listuserdata = User_data.objects.all()[:20]
         #     return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data})
@@ -464,11 +468,13 @@ def userprofile(request,name,id):
             friendscount=len(friendarr)
             requestcount= len(friendrequestarr)
             # --------------------
+            listuser_not=notconnected(request,id)
+            randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
             # form image
             # imagelist=imagefeeds(request,id)
             # for feeds
             feeds=feed_for_profie(request,id)
-            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide,'feeds':feeds,'listliked':listliked ,'today':timezone.now()})
+            return render(request, 'blog/userprofile.html', {'userprofile_data': profile_data,'friendlist':myfriends,'myid':myid ,'connected':connected,"myrequestarr":myrequestarr,'friendarr':friendarr ,'friendscount':friendscount,'requestcount':requestcount,'profile_data':myprofile_data,'hide':hide,'feeds':feeds,'listliked':listliked ,'today':timezone.now(),'randomuser':randomuser})
         else:
             messages.warning(
                     request, 'profile not found')
@@ -478,12 +484,21 @@ def userprofile(request,name,id):
 
 def upadateprofile(request):
     print("updateprofile")
-    file = request.FILES['profile_pic']
+    file = request.FILES.get('profile_pic',None)
+    cover = request.FILES.get('cover_image',None)
+    name = request.POST.get('name',None)
     print(file)
     myid = request.session['userid']
     if myid:
         profile=User_data.objects.get(id=myid)
-        profile.image=file
+        if file:
+            profile.image=file
+        if name:
+            name=name.title()
+            profile.name=name
+            request.session['name']=name
+        if cover:
+            profile.coverpicture=cover
         profile.save()
         return redirect("blog-userprofile", profile.name ,profile.id)
     else:
@@ -632,7 +647,9 @@ def conrequiestList(request):
         for item in con_request:
             arr.append(item.requested_by.id)
         userdata = User_data.objects.filter(id__in=arr)
-        return render(request, 'blog/friendrequest.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
+        listuser_not=notconnected(request,id)
+        randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]   
+        return render(request, 'blog/friendrequest.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data,'randomuser':randomuser})
         
         # return render(request, 'blog/friendrequest.html', {'userdata': userdata,})
     else:
@@ -675,6 +692,8 @@ def like_post(request):
             PD= Posted_data.objects.get(id=id)
             PD.likes_count=int(PD.likes_count)+1
             PD.save() 
+            # post_data = Posted_data.objects.filter(id=id)
+            # return render(request, 'blog/share.html', {'data': post_data, "listliked": listliked,'today':timezone.now()})
             return HttpResponse("liked")
     else:
         return HttpResponse("already liked")
@@ -693,11 +712,13 @@ def friendlist(request,id):
     requestcount= len(friendrequestarr)
     profile_data=User_data.objects.get(id=id)
     # ----------------------
+    listuser_not=notconnected(request,id)
+    randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
     if myfriends.count()>0:
         # return render(request, 'blog/friends.html', {'friendlist':myfriends})
-        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
+        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data,'randomuser':randomuser})
     else:
-        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data})
+        return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data,'randomuser':randomuser})
 
 
 def likedby(request):
@@ -741,6 +762,18 @@ def myconnection(request,id):
         # print(arr)
         return arr
     return 0
+
+def notconnected(request,id):
+    listconnection=myconnection(request,id)
+    print(listconnection)
+    users=User_data.objects.all()
+    arr=[]
+    for obj in users:
+        if obj.id not in listconnection:
+            arr.append(obj.id)
+    return arr
+            
+            
  
 def myfriendlist(request, id):
     if id:

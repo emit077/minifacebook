@@ -18,6 +18,7 @@ class User_data(models.Model):
     mobile_no = models.CharField(max_length=12, unique=True)
     password = models.CharField(max_length=20)
     image = models.ImageField(default='default.png',upload_to='images/')
+    coverpicture=models.ImageField(default='cover.jpg',upload_to='cover/')
     creation_date = models.DateTimeField(default=timezone.now())
     Isverify = models.BooleanField(default=False)
 

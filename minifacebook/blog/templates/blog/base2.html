@@ -4,6 +4,13 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
@@ -13,6 +20,7 @@
     <link rel="stylesheet" href="{% static 'blog/css/iziToast.min.css' %}">
     <script src="{% static 'blog/js/ajax.js' %}"></script>
     <script src="{% static 'blog/js/iziToast.min.js' %}"></script>
+    <link href="https://fonts.googleapis.com/css?family=Amaranth|Oleo+Script&display=swap" rel="stylesheet">
     <!-- cdn for toasts -->
     <style>
         a {
@@ -25,23 +33,34 @@
 
     <!-- -----------------------------Nav Bar-------------------------------------- -->
     <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #5f788a; "> -->
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d ">
-        <a class="navbar-brand" href="{% url 'blog-user_post' %}">Mini App</a>
-        <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px">
-            <div style=" margin-left:25%;width:50%">
+    <nav class="navbar navbar-expand-sm navbar-dark p-2 pl-2" style="background-color: #29487d;">
+        <a class="navbar-brand" href="{% url 'blog-home' %}">
+            <strong>
+                <div class="pr-2 m-0" style=" border:solid white 1px;">
+                    <div class="m-0 p-1" style="background:white;color:#29487d; display: inline-block;" class="p-1">
+                        mini
+                    </div>
+                    facebook
+                </div>
+            </strong>
+        </a>
+        <button class="navbar-toggler d-lg-none " type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+            aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px text-right">
+            <div style="margin-left:15%;width:50% text-right">
                 <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form"
                     onsubmit=" return vlidatesearch()">
                     {% csrf_token %}
-                    <input class="form-control mr-sm-2 ml-5 ext-center" type="text" id="searchterm" name="searchterm"
+                    <input class="form-control mr-sm-2 ml-5 p-1" type="text" id="searchterm" name="searchterm"
                         placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
                     <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
                 </form>
-
             </div>
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:20%">
-                <li class="nav-item">
-                    <a class="nav-link" href="{%url 'blog-delete'%}"> Logout</a>
-                    <!-- <a class="nav-link" href="#" onclick="logout()"> Logout</a> -->
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:45%">
+                <li class="nav-item text-right">
+                    <a class="nav-link mr-2" href="{%url 'blog-delete'%}"> Logout</a>
                 </li>
             </ul>
         </div>
@@ -90,21 +109,43 @@
                                 </div>
                             </div>
                         </li>
-                        <!-- <li class="list-group-item list-group-item-light">Calendars</li>
-                            <li class="list-group-item list-group-item-light">etc</li> -->
-                        <!-- <small id="PostHelpId" class="form-text   " style="color: #ad3535;"></small>
-                        <textarea id="notes" cols="auto" rows="5" name="notes" /
-                            placeholder=" Write Something to Post  "></textarea>
-                        <input type="button" class="btn btn-outline-info" value="POST" onclick="PostBlog()" /> -->
                     </ul>
+                    <div>
+                        You may know them
+                    </div>
+                    {% if randomuser %}
+                    {% for item  in randomuser %}
+                    <div id="suggestion_{{item.id}}" class="content-section m-0 pl-1 ">
+                        <div class="row" style="matgin-top:auto">
+                            <div class="col-sm-8">
+                                <div class="media-body">
+                                    <div class="media">
+                                        {% if item.image %}
+                                        <img class="rounded-circle" src="{{ item.image.url }}"
+                                            style="width: 25px;height: 25px;">
+                                        {% endif %}
+                                        <a class="ml-1 mt-1" href="{% url 'blog-userprofile' item.name item.id %}"
+                                            style="font-size: 0.8rem;">
+                                            {{ item.name}}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 mt-1 text-right">
+                                <button class="btn btn-primary suggetion p-1" style="font-size: 0.7rem;"
+                                    onclick="addfriend({{item.id}})">
+                                    Add Friend
+                                </button>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
         </div>
     </main>
-
-
-
-
     <!-- for search results -->
     <div style="text-align:center;width:60%; ">
         <div id="searchresult"
@@ -125,10 +166,10 @@
                 return false;
             }
         }
-
+        // for image priview and  remove
         function readURL(input) {
             if (input.files && input.files[0]) {
-                    $("#deleteimagefeed").show();
+                $("#deleteimagefeed").show();
                 var reader = new FileReader();
 
                 reader.onload = function (e) {
@@ -137,33 +178,24 @@
                         .width(40)
                         .height(40);
                 };
-
                 reader.readAsDataURL(input.files[0]);
             }
         }
-         function resetFile() { 
-            const file = 
-                document.querySelector('.feed_images'); 
+        function resetFile() {
+            const file =
+                document.querySelector('.feed_images');
             file.value = '';
-             $('#blah').hide(); 
-                    $("#deleteimagefeed").hide();
-
-
-        } 
-
-    {% comment %} var control = $("#feed_image"),
-    clearBn = $("#deleteimagefeed");
-
-clearBn.on("click", function(){
-    control.replaceWith( control.val('').clone( true ) );
-});
-
-control.on({
-    change: function(){ console.log( "Changed" ) },
-     focus: function(){ console.log(  "Focus"  ) }
-}); {% endcomment %}
-
-
+            $('#blah').hide();
+            $("#deleteimagefeed").hide();
+        }
+        function resetFile2() {
+            const file =
+                document.querySelector('.profile_pic');
+            file.value = '';
+            $('#blah').hide();
+            $("#deleteimagefeed").hide();
+        }
+        //-------------------------------------------
 
         //   on focuse show rhe i post button 
         $("#notes").focus(function () {
@@ -226,6 +258,8 @@ control.on({
                 url: "{% url 'blog-like_post' %}",
                 data: { id: id },
                 success: function (data) {
+                    $("#likeicon_" + id).attr("src", "{% static 'blog/media/icon-like-blue.png' %}");
+                    $("#inactivebtn_" + id).attr("onclick", "");
                     var oldcount = $("#likecount_" + id).text();
                     var num = num = parseFloat(oldcount);
                     num = num + 1;
@@ -234,7 +268,7 @@ control.on({
                     } else {
                         $("#likecount_" + id).text("1 Like");
                     }
-                    $("#likeicon_" + id).attr("src", "{% static 'blog/media/icon-like-blue.png' %}");
+
                 }
             });
 
@@ -243,8 +277,8 @@ control.on({
         function postfeed() {
             var file = document.forms["feed_form"]["feed_image"].value;
             var notes = document.forms["feed_form"]["notes"].value;
-           var files= $("#feed_image").val();
-            if ((notes == null || notes == "" || notes == undefined)&&(files == undefined||files == null||files =="")) {
+            var files = $("#feed_image").val();
+            if ((notes == null || notes == "" || notes == undefined) && (files == undefined || files == null || files == "")) {
                 $("#PostHelpId").text("Please Enter Something To Post")
                 return false;
             }
@@ -423,9 +457,11 @@ control.on({
                 data: { 'status': "PENDING", 'requested_by': id },
                 success: function (data) {
                     $("#mydiv_" + id).focus();
+                    $("#suggestion_" + id).hide();
+
                     iziToast.info({
                         message: data,
-                        position: topRight,
+                        position: "topRight",
                     });
                 }
             });

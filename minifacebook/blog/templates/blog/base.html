@@ -25,15 +25,23 @@
 </head>
 
 <body id="newbody" style="background-color: #e9ebee;">
-	<nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #29487d;">
-		<a class="navbar-brand" href="{% url 'blog-home' %}">Mini App</a>
-		<button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
-			aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
+	<nav class="navbar navbar-expand-sm navbar-dark p-0 pl-2" style="background-color: #29487d;">
+		<a class="navbar-brand" href="{% url 'blog-home' %}">
+			<strong>
+				<div class="pr-2 m-0" style=" border:solid white 1px;">
+					<div class="m-0 p-1" style="background:white;color:#29487d; display: inline-block;" class="p-1">
+						mini
+					</div>
+					facebook
+				</div>
+			</strong>
+		</a>
+		<button class="navbar-toggler d-lg-none " type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+			aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
 		<div class="collapse navbar-collapse mr-5" id="collapsibleNavId">
 			<ul class="navbar-nav mr-auto mt-2 mt-lg-0 text-right" style="margin-left:90%;">
-				<!-- <li id="blog-home" class="nav-item active">
-					<a class="nav-link" href="">Home <span class="sr-only">(current)</span></a>
-				</li> -->
 				<li id="blog-login" class="nav-item">
 					<a class="nav-link" href="{% url 'blog-login_form' %}"> Login</a>
 				</li>
@@ -99,5 +107,18 @@
 			});
 		}
 	</script>
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+		integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+		crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+		crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+		crossorigin="anonymous"></script>
 
-</body>
+
+<!------ Include the above in your HEAD tag ---------->
+
+ <!-- /container -->  
