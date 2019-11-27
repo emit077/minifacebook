@@ -10,10 +10,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>
-
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
     <link rel="stylesheet" href="{% static 'blog/css/main.css'  %}">
     <link rel="stylesheet" href="{% static 'blog/css/bootstrap4.3.1.css' %}">
@@ -44,26 +47,28 @@
                 </div>
             </strong>
         </a>
+
         <button class="navbar-toggler d-lg-none " type="button" data-toggle="collapse" data-target="#collapsibleNavId"
             aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavId" style=" font-size:14px text-right">
-            <div style="margin-left:15%;width:50% text-right">
-                <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form"
-                    onsubmit=" return vlidatesearch()">
-                    {% csrf_token %}
-                    <input class="form-control mr-sm-2 ml-5 p-1" type="text" id="searchterm" name="searchterm"
-                        placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
-                    <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
-                </form>
+        <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form" onsubmit=" return vlidatesearch()"
+            style="width: 100%;">
+            {% csrf_token %}
+            <input class="form-control mr-sm-2 ml-5 p-1" type="text" id="searchterm" name="searchterm"
+                placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
+            <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
+        </form>
+        <div class="collapse navbar-collapse" id="collapsibleNavId" style="font-size:14px text-right">
+            <div style="text-right float-right">
             </div>
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="margin-left:45%">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="">
                 <li class="nav-item text-right">
                     <a class="nav-link mr-2" href="{%url 'blog-delete'%}"> Logout</a>
                 </li>
             </ul>
         </div>
+
     </nav>
     <!-- ----------------------------------body--------------------------------------------- -->
     <main role="main" class="container">
@@ -79,16 +84,16 @@
                     <div class="media">
                         {% if profile_data.image %}
                         <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
-                            style="width:60px;height:60px;">
+                            style="width:50px;height:50px;">
                         {% else %}
                         <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
                             style="width:60px;height:60px;">
                         {% endif %}
                         <div class="media-body pt-2">
-                            <h2><a
+                            <h4><a
                                     href="{% url 'blog-userprofile' request.session.name request.session.userid %}">{{ request.session.name }}</a>
                                 <!-- <h2><a href="#" onclick="userprofile({{ request.session.userid }})">{{ request.session.name }}</a>  -->
-                            </h2>
+                            </h4>
                         </div>
                     </div>
                     <ul class="list-group">
@@ -194,6 +199,35 @@
             file.value = '';
             $('#blah').hide();
             $("#deleteimagefeed").hide();
+        }
+        function readURL3(input) {
+            if (input.files && input.files[0]) {
+                $("#cover-picture-save-button").show();
+                $("#cancel-update-button").show();
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log(e.target.result);
+
+                    $('#coverpicture').attr('src', e.target.result);
+                    //.width(40)
+                    //.height(40);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        } function readURL2(input) {
+            if (input.files && input.files[0]) {
+                $("#profile-picture-save-button").show();
+                $("#cancel-update-button2").show();
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    console.log(e.target.result);
+
+                    $('#profile-picture').attr('src', e.target.result);
+                    //.width(40)
+                    //.height(40);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
         //-------------------------------------------
 

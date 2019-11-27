@@ -1,14 +1,53 @@
 {% extends 'blog/base2.html' %}
 {% block base2 %}
 {% load static %}
-
+<style>
+    .pointer {
+        cursor: pointer;
+    }
+</style>
 <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <div class="container">
     <div class="fb-profile">
-        <img align="left" class="fb-image-lg" src="{{ userprofile_data.coverpicture.url }}"
-            alt="Profile image example" />
+        <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data"
+            onsubmit="return validateimage_form()" name="imageform">
+            {% csrf_token %}
+            {% if request.session.userid == userprofile_data.id %}
+            <div style="position: relative;top:20px" class="p-0 m-0">
+                <input type="file" name="cover_image" id="cover_image" class="profile_pic m-0 p-0"
+                    onchange="readURL3(this)" hidden>
+                <label for="cover_image" class="p-0 m-0 pointer">
+                    <img src="{% static 'blog/media/camera.png' %}" alt="">
+                </label>
+            </div>
+            {% endif %}
+            <img align="left" class="fb-image-lg" src="{{ userprofile_data.coverpicture.url }}"
+                alt="Profile image example" id="coverpicture" />
+            <div class=" text-right">
+                <a href="" id="cancel-update-button" class="btn " style="display: none;">cancel</a>
+                <button type="submit" id="cover-picture-save-button" style="display: none;">save</button>
+            </div>
+        </form>
+        {% if request.session.userid == userprofile_data.id %}
+        <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data"
+            onsubmit="return validateimage_form()" name="imageform">
+            {% csrf_token %}
+            <div class=" text-right">
+                <a href="" id="cancel-update-button2" class="btn " style="display: none;">cancel</a>
+                <button type="submit" id="profile-picture-save-button" style="display: none;">save</button>
+            </div>
+            <div style="position: relative;left:172px ;top:50px" class="p-0 m-0">
+                <input type="file" name="profile_pic" id="profile_pic" class="profile_pic m-0 p-0"
+                    onchange="readURL2(this)" hidden>
+                <label for="profile_pic" class="p-0 m-0 pointer">
+                    <img src="{% static 'blog/media/camera.png' %}" alt="">
+                </label>
+            </div>
+        </form>
+        {% endif %}
         <img align="left" class="fb-image-profile thumbnail" src="{{ userprofile_data.image.url }}" alt="Profile image"
-            style="border:solid lightgray 2px;border-redius:5px;" />
+            style="border:solid lightgray 2px;border-redius:5px;" id="profile-picture" />
+
         <div class="fb-profile-text text-left ">
             <strong class="text-left" style="font-size: 1.7rem; margin-right:25%">{{ userprofile_data.name }}</strong>
             <div class="text-right">
@@ -45,7 +84,8 @@
                 {% else %}
                 {% comment %} {{ item.id}} {% endcomment %}
                 <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
-                    onclick="addfriend({{userprofile_data.id}})">Add Friend</a>
+                    onclick="addfriend({{userprofile_data.id}})">Add
+                    Friend</a>
                 {% endif %}
                 {% endif %}
             </div>
@@ -142,7 +182,7 @@
                         <input type="text" class="form-control" name="name" id="name" aria-describedby="nameHelpId"
                             placeholder="Enter your name" value="{{ request.session.name }}">
                         <small id="nameHelpId" class="form-text" style="color: #ad3535;"></small>
-                        <input type="file" name="profile_pic" id="profile_pic" class="btn btn-primary profile_pic"
+                        <!-- <input type="file" name="profile_pic" id="profile_pic" class="btn btn-primary profile_pic"
                             onchange="readURL(this)" hidden>
                         <label for="profile_pic" class="btn btn-primary">Upload Profile Picture</label>
                         <img id="blah" src="#" alt=" " class="p-0 ml-5" />
@@ -152,7 +192,7 @@
 
                         <input type="file" name="cover_image" id="cover_image" class="btn btn-primary profile_pic"
                             hidden>
-                        <label for="cover_image" class="btn btn-primary">Upload Cover Picture</label><br>
+                        <label for="cover_image" class="btn btn-primary">Upload Cover Picture</label><br> -->
 
 
                         <button class="btn btn-outline-primary" type="submit">Update</button>
