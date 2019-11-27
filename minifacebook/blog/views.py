@@ -163,29 +163,9 @@ def sentotp(request):
     print(mobile_no)
     if mobile_no:
         sentOTP_new(request,mobile_no)
-        # listuser= OTP.objects.filter(mobile_no=mobile_no)
-        # randomOTP = random.randint(1000, 9999)
-        # print(randomOTP)
-        # print(listuser.count())
-        # if listuser.count()==0:
-        #     otps=OTP()
-        #     otps.mobile_no=mobile_no
-        #     otps.otp=randomOTP
-        #     otps.save()
         messages.success(
         request, 'OTP Sent Successfully')
         return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
-        # else:
-        #     for item in listuser:
-        #         item.delete()
-        #     print("else")
-        #     otps=OTP()
-        #     otps.mobile_no=mobile_no
-        #     otps.otp=randomOTP
-        #     otps.save()
-        #     messages.success(
-        #     request, 'OTP Sent Successfully')
-        #     return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
     else:
         messages.warning(
             request, 'PLease Enter Valid Mobile Number')
@@ -310,6 +290,14 @@ def user_post(request):
             Q(posted_by_id__in=arr)|Q(posted_by_id=id)).order_by('-posted_on')
 
         data = Posted_data.objects.all().order_by('-posted_on')
+        # testing area-------------------------------
+        # listuser_not=notconnected(request,id)
+        
+        f_of_f =  friends_of_friend(request,id)
+        randomuser=None
+        if f_of_f:
+            randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]
+        # -------------------------------------
         # friend requests-----------------------
         con_request = Requiest_list.objects.filter(
             requested_to=id, status="PENDING")
@@ -317,18 +305,18 @@ def user_post(request):
         friendscount= len(arr)
         request.session['requests']=requestcount
         request.session['Frineds']=friendscount
-        listuser_not=notconnected(request,id)
-        randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
+        # listuser_not=notconnected(request,id)
+        # randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
         if data.count() > 0:
             return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked,'profile_data':userinfo ,'today':timezone.now(),'randomuser':randomuser})
         else:
-            return render(request, 'blog/share.html', {'profile_data': userinfo})
+            return render(request, 'blog/share.html', {'profile_data': userinfo,'requestcount': requestcount,'friendscount':friendscount,'randomuser':randomuser })
     else:
         return redirect('blog-home')
 def Logout(request):
     try:
         # del request.session['name']
-        # del request.session['userid']
+        # del request.session['userid']randomuser
         # return render(request, 'blog/home.html')
         return delete_session(request)
     except KeyError:
@@ -393,8 +381,10 @@ def SearchUser(request):
             except ValueError:
                 listuserdata = User_data.objects.filter(
                     name__icontains=searchTerm)
-            listuser_not=notconnected(request,id)
-            randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
+            f_of_f =  friends_of_friend(request,id)
+            randomuser=None
+            if f_of_f:
+                randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]
             return render(request, 'blog/searchlist.html', {'data': listuserdata,'connected':conarr,'friendarr':friendarr,"myrequestarr":myrequestarr,'requestcount':requestcount,'friendscount':friendscount,'profile_data':profile_data,'searchterm':searchTerm,'randomuser':randomuser})
         # else:
         #     listuserdata = User_data.objects.all()[:20]
@@ -460,8 +450,10 @@ def userprofile(request,name,id):
             friendscount=len(friendarr)
             requestcount= len(friendrequestarr)
             # --------------------
-            listuser_not=notconnected(request,id)
-            randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
+            f_of_f =  friends_of_friend(request,id)
+            randomuser=None
+            if f_of_f:
+                randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]
             # form image
             # imagelist=imagefeeds(request,id)
             # for feeds
@@ -639,8 +631,10 @@ def conrequiestList(request):
         for item in con_request:
             arr.append(item.requested_by.id)
         userdata = User_data.objects.filter(id__in=arr)
-        listuser_not=notconnected(request,id)
-        randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]   
+        f_of_f =  friends_of_friend(request,id)
+        randomuser=None
+        if f_of_f:
+            randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]  
         return render(request, 'blog/friendrequest.html', {'data': userdata,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data,'randomuser':randomuser})
         
         # return render(request, 'blog/friendrequest.html', {'userdata': userdata,})
@@ -704,8 +698,10 @@ def friendlist(request,id):
     requestcount= len(friendrequestarr)
     profile_data=User_data.objects.get(id=id)
     # ----------------------
-    listuser_not=notconnected(request,id)
-    randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
+    f_of_f =  friends_of_friend(request,id)
+    randomuser=None
+    if f_of_f:
+        randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]
     if myfriends.count()>0:
         # return render(request, 'blog/friends.html', {'friendlist':myfriends})
         return render(request, 'blog/friends.html', {'data': myfriends,'connected':conarr,'friendarr':friendarr,'friendscount':friendscount,'requestcount':requestcount,'profile_data':profile_data,'randomuser':randomuser})
@@ -813,14 +809,25 @@ def feed_for_profie(request,id ):
         return post_data
     else:
         return None
-# def imagefeeds(request ,id):
-#     if id :
-#         friendarr=myfriendlist(request,id)
-#         Posted_data.objects.filter(Q(posted_by_id__in=friendarr)|Q(posted_by_id=id)).exclude(image="")
-        
-#         imagelist= User_data.objects.filter(id__in=friendarr).exclude(image="defalult.png")[:5]
-        
-#         return Posted_data
+def friends_of_friend(request,id):
+    if id:
+        listfriend= myfriendlist(request,id)
+        listmyconnection=myconnection(request,id)
+        if listfriend:
+            listsubfriends=[]
+            for id in listfriend:
+                arr = myfriendlist(request,id)
+                listsubfriends+=arr
+            dist_list=list(dict.fromkeys(listsubfriends))
+            res = [i for i in dist_list if i not in listmyconnection] 
+            if id in res:
+                res=res.remove(id)
+            print("fof="+str(res))
+            return res
+            
+
+            
+            
         
     
 

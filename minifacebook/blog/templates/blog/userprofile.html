@@ -7,20 +7,22 @@
     }
 </style>
 <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-<div class="container">
-    <div class="fb-profile">
+<div class="container" class="bg-light">
+    <div class="fb-profile" class="bg-light">
         <form action="{% url 'blog-upadteprofile' %}" method="POST" enctype="multipart/form-data"
             onsubmit="return validateimage_form()" name="imageform">
             {% csrf_token %}
-            {% if request.session.userid == userprofile_data.id %}
             <div style="position: relative;top:20px" class="p-0 m-0">
+                {% if request.session.userid == userprofile_data.id %}
+
                 <input type="file" name="cover_image" id="cover_image" class="profile_pic m-0 p-0"
                     onchange="readURL3(this)" hidden>
                 <label for="cover_image" class="p-0 m-0 pointer">
-                    <img src="{% static 'blog/media/camera.png' %}" alt="">
+                    <img src="{% static 'blog/media/camera.png' %}" alt="" class="m-0 p-0">
                 </label>
+                {% endif %}
+
             </div>
-            {% endif %}
             <img align="left" class="fb-image-lg" src="{{ userprofile_data.coverpicture.url }}"
                 alt="Profile image example" id="coverpicture" />
             <div class=" text-right">
