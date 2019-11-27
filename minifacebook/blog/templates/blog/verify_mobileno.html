@@ -63,7 +63,7 @@
     });
 
     function resendotp() {
-        mobile_no = $("#mobile").val();
+    var mobile_no = $("#mobile").val();
         $.ajax({
             type: 'GET',
             url: "{% url 'blog-sentotp' %}",

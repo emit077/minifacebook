@@ -48,7 +48,7 @@ def registration(request):
             return redirect('blog-register_form')
         UD = User_data.objects.filter(mobile_no=mobile_no ,Isverify=True)
         if UD.count() > 0:
-            print("here")
+            print("mobile no. already exists")
             messages.warning(
                 request, "Mobile number already exist")
             return render(request, 'blog/register.html',{'mobile_no':mobile_no,'name':name})
@@ -61,43 +61,10 @@ def registration(request):
         userentry.password = password
         userentry.creation_date = timezone.now()
         userentry.save()
-
-        otp = random.randint(1000, 9999)
-        print(otp)
-        otps=OTP()
-        otps.mobile_no=mobile_no
-        otps.otp=otp
-        otps.save()
+        sent=sentOTP_new(request,mobile_no)
         messages.success(
             request, " Account created successfully. Please Verify your  Mobile no")
         return render(request, 'blog/verify_mobileno.html',{'mobile_no':mobile_no})
-        #     username=mobile_no, password=password)
-        # user.save()
-
-        # msg authentication
-        # Authentication = "303565AGyn1zL4jlj5dcbac5c"
-        # Mobile = "8305050674"
-        # conn = http.client.HTTPSConnection("api.msg91.com")
-        # payload = ""
-        # headers = {'content-type': "application/json"}
-        # conn.request("POST", "/api/v5/otp?invisible=1&otp=OTP%20to%20send%20and%20verify.2020%20If%20not%20sent%2C%20OTP%20will%20be%20generated.&userip=IPV4%20User_data%20IP&authkey=303565AGyn1zL4jlj5dcbac5c%20Key&email=Email%20ID&mobile=8305050674%20Number&template_id=5dcbb6b0d6fc0549a955d997%20ID&otp_length=&otp_expiry=", payload, headers)
-        # res = conn.getresponse()
-        # data = res.read()
-        # print(data.decode("utf-8"))
-
-        conn = http.client.HTTPSConnection("api.msg91.com")
-
-        payload = ""
-
-        headers = {'content-type': "application/json"}
-
-        conn.request("POST", "/api/v5/otp?invisible=1&otp=OTP%20to%20send%20and%20verify.%20If%20not%20sent%2C%20OTP%20will%20be%20generated.&userip=IPV4%20User%20IP&authkey=303565AGyn1zL4jlj5dcbac5c&email=Email%20ID&mobile=Mobile%20Number&template_id=5dcbb6b0d6fc0549a955d997&otp_length=&otp_expiry=", payload, headers)
-
-        res = conn.getresponse()
-        data = res.read()
-
-        print(data.decode("utf-8"))
-
     else:
         return home(request)
 
@@ -147,7 +114,7 @@ def verify_mobile_number(request):
 
 def login(request):
     mobile_no = request.POST.get('mobile', None)
-    print  (mobile_no)
+    # print  (mobile_no)
     if mobile_no == None or mobile_no == "":
         messages.warning(
             request, 'please Enter  Mobile no')
@@ -189,48 +156,48 @@ def forgetpass(request):
     return render(request, 'blog/forgetpass.html')
 
 def sentotp(request):
+    print("t")
     mobile_no = request.POST.get('mobile', None)
     if mobile_no==None or mobile_no=="":
         mobile_no = request.GET.get('mobile_no', None)
     print(mobile_no)
     if mobile_no:
-        listuser= OTP.objects.filter(mobile_no=mobile_no)
-        randomOTP = random.randint(1000, 9999)
-        print(randomOTP)
-        print(listuser.count())
-        if listuser.count()==0:
-            otps=OTP()
-            otps.mobile_no=mobile_no
-            otps.otp=randomOTP
-            otps.save()
-            messages.success(
-            request, 'OTP Sent Successfully')
-            return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
-        else:
-            for item in listuser:
-                item.delete()
-            print("else")
-            otps=OTP()
-            otps.mobile_no=mobile_no
-            otps.otp=randomOTP
-            otps.save()
-            messages.success(
-            request, 'OTP Sent Successfully')
-            return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
+        sentOTP_new(request,mobile_no)
+        # listuser= OTP.objects.filter(mobile_no=mobile_no)
+        # randomOTP = random.randint(1000, 9999)
+        # print(randomOTP)
+        # print(listuser.count())
+        # if listuser.count()==0:
+        #     otps=OTP()
+        #     otps.mobile_no=mobile_no
+        #     otps.otp=randomOTP
+        #     otps.save()
+        messages.success(
+        request, 'OTP Sent Successfully')
+        return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
+        # else:
+        #     for item in listuser:
+        #         item.delete()
+        #     print("else")
+        #     otps=OTP()
+        #     otps.mobile_no=mobile_no
+        #     otps.otp=randomOTP
+        #     otps.save()
+        #     messages.success(
+        #     request, 'OTP Sent Successfully')
+        #     return render(request, 'blog/validateotp.html', {'mobile_no':mobile_no})
     else:
         messages.warning(
-            request, 'PLease Enter mobile no')
+            request, 'PLease Enter Valid Mobile Number')
         return redirect("blog-forgetpass")
     
     
 def validateOTP(request):
     mobile_no = request.POST.get('mobile', None)
     rOTP = request.POST.get('otp', None)
-    # print(rOTP)
     listotps=OTP.objects.filter(mobile_no=mobile_no).order_by('-time')
     if listotps.count()>0:
         objOTP=listotps.first()
-        # objOTP=OTP.objects.get(mobile_no=mobile_no)
         if objOTP.otp==rOTP:
             messages.info(
             request, 'OTP Verified')
@@ -250,21 +217,50 @@ def sentOTP_new(request, mobile_no):
         listuser= OTP.objects.filter(mobile_no=mobile_no)
         randomOTP = random.randint(1000, 9999)
         print(randomOTP)
-        print(listuser.count())
         if listuser.count()==0:
             otps=OTP()
             otps.mobile_no=mobile_no
             otps.otp=randomOTP
             otps.save()
+             # mag91 -------------------------------
+            conn = http.client.HTTPSConnection("api.msg91.com")
+
+            payload = ""
+
+            headers = {'content-type': "application/json"}
+
+            conn.request("POST", "/api/v5/otp?invisible=1&otp="+str(randomOTP)+"&userip=IPV4%20User%20IP&authkey=303565AGyn1zL4jlj5dcbac5c&email=&mobile="+str(mobile_no)+"&template_id=5dcbb6b0d6fc0549a955d997&otp_length=&otp_expiry=", payload, headers)
+
+            res = conn.getresponse()
+            data = res.read()
+
+            print(data.decode("utf-8"))
+        # # ------------------------------------------------------------
             return randomOTP
+        else:
             for item in listuser:
                 item.delete()
-            print("else")
             otps=OTP()
             otps.mobile_no=mobile_no
             otps.otp=randomOTP
             otps.save()
+             # mag91 -------------------------------
+            conn = http.client.HTTPSConnection("api.msg91.com")
+
+            payload = ""
+
+            headers = {'content-type': "application/json"}
+
+            conn.request("POST", "/api/v5/otp?invisible=1&otp="+str(randomOTP)+"&userip=IPV4%20User%20IP&authkey=303565AGyn1zL4jlj5dcbac5c&email=&mobile="+str(mobile_no)+"&template_id=5dcbb6b0d6fc0549a955d997&otp_length=&otp_expiry=", payload, headers)
+
+            res = conn.getresponse()
+            data = res.read()
+
+            print(data.decode("utf-8"))
+        # # ------------------------------------------------------------
             return  randomOTP
+           
+           
     else:
         return False
         
@@ -289,12 +285,10 @@ def resetpass(request):
         userdata = User_data.objects.get(mobile_no=mobile_no)
         userdata.password = password
         userdata.save()
-        print("hello")
         messages.success(
                 request, 'Password Reset Successfully')
         return login_form(request)
     else:
-        print("hello")
         messages.warning(
                 request, 'User Not Exist')
         return forgetpass(request)
@@ -303,7 +297,6 @@ def resetpass(request):
 def user_post(request):
     print('its postdata')
     id = request.session.get('userid', None)
-    print(id)
     if id:
         alreadyliked = Likes.objects.filter(liked_by_id=id)
         listliked = []
@@ -380,7 +373,7 @@ def Delete_notes(request):  # deleting  notes
 
 def SearchUser(request):
     searchTerm = request.GET.get('searchterm', None)
-    print(searchTerm)
+    # print(searchTerm)
     id= request.session.get('userid', None) 
     friendrequestarr=friendrequest(request,id)
     friendarr= myfriendlist(request,id)
@@ -391,7 +384,6 @@ def SearchUser(request):
         conarr=myconnection(request,id)
         friendarr= myfriendlist(request,id)
         myrequestarr=myrequest(request,id)
-        print()
         if searchTerm:
             userid = request.session['userid']
             try:
@@ -487,7 +479,7 @@ def upadateprofile(request):
     file = request.FILES.get('profile_pic',None)
     cover = request.FILES.get('cover_image',None)
     name = request.POST.get('name',None)
-    print(file)
+    # print(file)
     myid = request.session['userid']
     if myid:
         profile=User_data.objects.get(id=myid)
@@ -527,17 +519,17 @@ def accept_reject_request(request):
     id = request.GET.get('requested_by', None)
     status = request.GET.get('status', None)
     myid = request.session.get('userid', None)
-    print("accpp")
-    print(status)
-    print(myid)
-    print(id)
+    # print("accpp")
+    # print(status)
+    # print(myid)
+    # print(id)
     RLP = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="PENDING")
     RLU = Requiest_list.objects.filter(requested_by_id=id, requested_to_id=myid, status="ACCEPTED")
     RLP2 = Requiest_list.objects.filter(requested_by_id=myid, requested_to_id=id, status="PENDING")
     
     if status:
         if status=="UNFRIEND":
-            print("un")
+            # print("un")
             if RLU.count()>0:
                 RL = Requiest_list.objects.get(requested_by_id=id, requested_to_id=myid,status="ACCEPTED" )
                 RL.delete()
