@@ -289,7 +289,10 @@ def user_post(request):
         post_data = Posted_data.objects.filter(
             Q(posted_by_id__in=arr)|Q(posted_by_id=id)).order_by('-posted_on')
 
-        data = Posted_data.objects.all().order_by('-posted_on')
+        # data = Posted_data.objects.get(id=54)
+        # demo=data.feed.all()
+        # print("demo="+str(demo))
+        
         # testing area-------------------------------
         # listuser_not=notconnected(request,id)
         
@@ -307,7 +310,7 @@ def user_post(request):
         request.session['Frineds']=friendscount
         # listuser_not=notconnected(request,id)
         # randomuser=User_data.objects.filter(id__in=listuser_not).exclude(id=id).order_by("?")[:5]
-        if data.count() > 0:
+        if post_data.count() > 0:
             return render(request, 'blog/share.html', {'data': post_data, 'username': userinfo.name, 'userid': userinfo.id, 'requestcount': requestcount,'friendscount':friendscount, "listliked": listliked,'profile_data':userinfo ,'today':timezone.now(),'randomuser':randomuser})
         else:
             return render(request, 'blog/share.html', {'profile_data': userinfo,'requestcount': requestcount,'friendscount':friendscount,'randomuser':randomuser })
@@ -450,10 +453,10 @@ def userprofile(request,name,id):
             friendscount=len(friendarr)
             requestcount= len(friendrequestarr)
             # --------------------
-            f_of_f =  friends_of_friend(request,id)
+            f_of_f =  friends_of_friend(request,myid)
             randomuser=None
             if f_of_f:
-                randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=id).order_by("?")[:5]
+                randomuser=User_data.objects.filter(id__in=f_of_f).exclude(id=myid).order_by("?")[:5]
             # form image
             # imagelist=imagefeeds(request,id)
             # for feeds

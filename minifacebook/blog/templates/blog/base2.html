@@ -27,12 +27,20 @@
     <!-- cdn for toasts -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-		integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-		crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-		integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-		crossorigin="anonymous"></script>
-
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script>
+        function loader() {
+            myVar = setTimeout(showPage, 500);
+        }
+        function showPage() {
+            $("#loader").hide();
+            $("#myDiv").show();
+        }
+    </script>
     <style>
         a {
             color: #29487d;
@@ -40,536 +48,539 @@
     </style>
 </head>
 
-<body id="newbody" style="background-color: #e9ebee;">
-
-    <!-- -----------------------------Nav Bar-------------------------------------- -->
-    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #5f788a; "> -->
-    <nav class="navbar navbar-expand-sm navbar-dark p-2 pl-2" style="background-color: #29487d;">
-        <a class="navbar-brand" href="{% url 'blog-home' %}">
-            <strong>
-                <div class="pr-2 m-0" style=" border:solid white 1px;">
-                    <div class="m-0 p-1" style="background:white;color:#29487d; display: inline-block;" class="p-1">
-                        mini
-                    </div>
-                    facebook
-                </div>
-            </strong>
-        </a>
-
-        <button class="navbar-toggler d-lg-none " type="button" data-toggle="collapse" data-target="#collapsibleNavId"
-            aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form" onsubmit=" return vlidatesearch()"
-            style="width: 100%;">
-            {% csrf_token %}
-            <input class="form-control mr-sm-2 ml-5 p-1" type="text" id="searchterm" name="searchterm"
-                placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
-            <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
-        </form>
-        <div class="collapse navbar-collapse" id="collapsibleNavId" style="font-size:14px text-right">
-            <div style="text-right float-right">
-            </div>
-            <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="">
-                <li class="nav-item text-right">
-                    <a class="nav-link mr-2" href="{%url 'blog-delete'%}"> Logout</a>
-                </li>
-            </ul>
-        </div>
-
-    </nav>
-    <!-- ----------------------------------body--------------------------------------------- -->
-    <main role="main" class="container">
-        <div class="row">
-            <div class="col-md-8 mt-2" id="mainbody">
-
-                {% block base2 %}
-                {% endblock base2 %}
-
-            </div>
-            <div class="col-md-4 mt-2">
-                <div class="content-section">
-                    <div class="media">
-                        {% if profile_data.image %}
-                        <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
-                            style="width:50px;height:50px;">
-                        {% else %}
-                        <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
-                            style="width:60px;height:60px;">
-                        {% endif %}
-                        <div class="media-body pt-2">
-                            <h4><a
-                                    href="{% url 'blog-userprofile' request.session.name request.session.userid %}">{{ request.session.name }}</a>
-                                <!-- <h2><a href="#" onclick="userprofile({{ request.session.userid }})">{{ request.session.name }}</a>  -->
-                            </h4>
+<body id="newbody" style="background-color: #e9ebee;" onload="loader()">
+    <div id="loader" class=""></div>
+    <div id="myDiv" style="display: none;">
+        <!-- -----------------------------Nav Bar-------------------------------------- -->
+        <nav class="navbar navbar-expand-sm navbar-dark p-2 pl-2" style="background-color: #29487d;">
+            <a class="navbar-brand" href="{% url 'blog-home' %}">
+                <strong>
+                    <div class="pr-2 m-0" style=" border:solid white 1px;">
+                        <div class="m-0 p-1" style="background:white;color:#29487d; display: inline-block;" class="p-1">
+                            mini
                         </div>
+                        facebook
                     </div>
-                    <ul class="list-group">
-                        <li class="list-group-item list-group-item-light">
-                            <div class="row text-center">
-                                <div class="col-sm-6">
-                                    <a class="nav-link mb-0 pb-0" href="{% url 'blog-conrequiestList' %}">
-                                        <h2 class="mb-0 pb-0" style="color:#29487d">{{ requestcount }}</h2>
-                                        Requests
-                                    </a>
-                                </div>
-                                <div class="col-sm-6 Text-center">
-                                    <a class="nav-link mb-0 pb-0"
-                                        href="{% url 'blog-friendlist' request.session.userid  %}">
-                                        <h2 class="mb-0 pb-0" style="color:#29487d"> {{ friendscount }}</h2>
-                                        Friends
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    {% if randomuser %}
+                </strong>
+            </a>
 
-                    <div>
-                        You may know them
-                    </div>
-                    {% for item  in randomuser %}
-                    <div id="suggestion_{{item.id}}" class="content-section m-0 pl-1 ">
-                        <div class="row" style="matgin-top:auto">
-                            <div class="col-sm-8">
-                                <div class="media-body">
-                                    <div class="media">
-                                        {% if item.image %}
-                                        <img class="rounded-circle" src="{{ item.image.url }}"
-                                            style="width: 25px;height: 25px;">
-                                        {% endif %}
-                                        <a class="ml-1 mt-1" href="{% url 'blog-userprofile' item.name item.id %}"
-                                            style="font-size: 0.8rem;">
-                                            {{ item.name}}
+            <button class="navbar-toggler d-lg-none " type="button" data-toggle="collapse"
+                data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <form action="{% url 'blog-SearchUser' %}" method="GET" name="search_form"
+                onsubmit=" return vlidatesearch()" style="width: 100%;">
+                {% csrf_token %}
+                <input class="form-control mr-sm-2 ml-5 p-1" type="text" id="searchterm" name="searchterm"
+                    placeholder="Search Friends" style="width: 60%;display: inline-block;" value="{{searchterm}}">
+                <button class="btn btn-outline-light my-2 my-sm-0 p-1" id="searchbutton">Search</button>
+            </form>
+            <div class="collapse navbar-collapse" id="collapsibleNavId" style="font-size:14px text-right">
+                <div style="text-right float-right">
+                </div>
+                <ul class="navbar-nav mr-auto mt-2 mt-lg-0" style="">
+                    <li class="nav-item text-right">
+                        <a class="nav-link mr-2" href="{%url 'blog-delete'%}"> Logout</a>
+                    </li>
+                </ul>
+            </div>
+
+        </nav>
+        <!-- ----------------------------------body--------------------------------------------- -->
+        <main role="main" class="container">
+            <div class="row">
+                <div class="col-md-8 mt-2" id="mainbody">
+
+                    {% block base2 %}
+                    {% endblock base2 %}
+
+                </div>
+                <div class="col-md-4 mt-2">
+                    <div class="content-section">
+                        <div class="media">
+                            {% if profile_data.image %}
+                            <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
+                                style="width:50px;height:50px;">
+                            {% else %}
+                            <img class="rounded-circle account-img" src="{% static 'blog/media/pc.jpg' %}"
+                                style="width:60px;height:60px;">
+                            {% endif %}
+                            <div class="media-body pt-2">
+                                <h4><a
+                                        href="{% url 'blog-userprofile' request.session.name request.session.userid %}">{{ request.session.name }}</a>
+                                    <!-- <h2><a href="#" onclick="userprofile({{ request.session.userid }})">{{ request.session.name }}</a>  -->
+                                </h4>
+                            </div>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item list-group-item-light">
+                                <div class="row text-center">
+                                    <div class="col-sm-6">
+                                        <a class="nav-link mb-0 pb-0" href="{% url 'blog-conrequiestList' %}">
+                                            <h2 class="mb-0 pb-0" style="color:#29487d">{{ requestcount }}</h2>
+                                            Requests
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-6 Text-center">
+                                        <a class="nav-link mb-0 pb-0"
+                                            href="{% url 'blog-friendlist' request.session.userid  %}">
+                                            <h2 class="mb-0 pb-0" style="color:#29487d"> {{ friendscount }}</h2>
+                                            Friends
                                         </a>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-sm-4 mt-1 text-right">
-                                <button class="btn btn-primary suggetion p-1" style="font-size: 0.7rem;"
-                                    onclick="addfriend({{item.id}})">
-                                    Add Friend
-                                </button>
-                            </div>
-                            <br>
+                            </li>
+                        </ul>
+                        {% if randomuser %}
+
+                        <div>
+                            You may know them
                         </div>
+                        {% for item  in randomuser %}
+                        <div id="suggestion_{{item.id}}" class="content-section m-0 pl-1 ">
+                            <div class="row" style="matgin-top:auto">
+                                <div class="col-sm-8">
+                                    <div class="media-body">
+                                        <div class="media">
+                                            {% if item.image %}
+                                            <img class="rounded-circle" src="{{ item.image.url }}"
+                                                style="width: 25px;height: 25px;">
+                                            {% endif %}
+                                            <a class="ml-1 mt-1" href="{% url 'blog-userprofile' item.name item.id %}"
+                                                style="font-size: 0.8rem;">
+                                                {{ item.name}}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-4 mt-1 text-right">
+                                    <button class="btn btn-primary suggetion p-1" style="font-size: 0.7rem;"
+                                        onclick="addfriend({{item.id}})">
+                                        Add Friend
+                                    </button>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                    {% endif %}
                 </div>
             </div>
+        </main>
+        <!-- for search results -->
+        <div style="text-align:center;width:60%; ">
+            <div id="searchresult"
+                style="display: none; text-align:center; z-index: 2; position:  absolute;top: 9%; right:0%; background-color: #e1dddd9b;  width: 40%; max-width: 21%;max-height: 50%; overflow-y: scroll; border: solid 1px #e1dddd9b;">
+            </div>
         </div>
-    </main>
-    <!-- for search results -->
-    <div style="text-align:center;width:60%; ">
-        <div id="searchresult"
-            style="display: none; text-align:center; z-index: 2; position:  absolute;top: 9%; right:0%; background-color: #e1dddd9b;  width: 40%; max-width: 21%;max-height: 50%; overflow-y: scroll; border: solid 1px #e1dddd9b;">
+        <!--  for a request list -->
+        <div id=" requestList" style="display: none">
         </div>
-    </div>
-    <!--  for a request list -->
-    <div id=" requestList" style="display: none">
-    </div>
-    <div id="showhere" style="z-index: 1;">
-    </div>
-    <script>
-        function vlidatesearch() {
-            var searchterm = document.forms["search_form"]["searchterm"].value;
-            if (searchterm == null || searchterm == "" ||
-                searchterm == undefined) {
-                $("#PostHelpId").text("Please Enter Something To Post")
-                return false;
-            }
-        }
-        // for image priview and  remove
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                $("#deleteimagefeed").show();
-                var reader = new FileReader();
-
-                reader.onload = function (e) {
-                    $('#blah')
-                        .attr('src', e.target.result)
-                        .width(40)
-                        .height(40);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        function resetFile() {
-            const file =
-                document.querySelector('.feed_images');
-            file.value = '';
-            $('#blah').hide();
-            $("#deleteimagefeed").hide();
-        }
-        function resetFile2() {
-            const file =
-                document.querySelector('.profile_pic');
-            file.value = '';
-            $('#blah').hide();
-            $("#deleteimagefeed").hide();
-        }
-        function readURL3(input) {
-            if (input.files && input.files[0]) {
-                $("#cover-picture-save-button").show();
-                $("#cancel-update-button").show();
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    console.log(e.target.result);
-
-                    $('#coverpicture').attr('src', e.target.result);
-                    //.width(40)
-                    //.height(40);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        } function readURL2(input) {
-            if (input.files && input.files[0]) {
-                $("#profile-picture-save-button").show();
-                $("#cancel-update-button2").show();
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    console.log(e.target.result);
-
-                    $('#profile-picture').attr('src', e.target.result);
-                    //.width(40)
-                    //.height(40);
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-        //-------------------------------------------
-
-        //   on focuse show rhe i post button 
-        $("#notes").focus(function () {
-            $("#notes").css("border", "1px solid #ccc");
-            $("#notes").css("min-height", "100px");
-            //  $("#notes").css("col", "5");
-            $("#postbtn").show();
-            $("#clearpostbtn").show();
-            $("#feeds_image").show();
-        });
-        // $("#notes").focusout(function () {
-        //     $("#postbtn").hide();
-        // });
-
-        function changefocus(id) {
-            // alert("chnagefocus");
-            $("#newcomment_" + id).focus();
-        }
-
-        function clearpost() {
-            $("#notes").val("");
-            $("#notes").css("border", "none");
-            $("#notes").css("min-height", "auto");
-            $("#postbtn").hide();
-            $("#clearpostbtn").hide();
-            $("#feeds_image").hide();
-
-
-
-        }
-
-        $(document).ready(function () {
-            $("#disply_textbox").change(function () {
-                $("#searchaterm").val();
-            });
-        });
-
-        $(document).ready(function () {
-            $("#disply_textbox").click(function () {
-                $("#text_note").show();
-                $("#searchresult").hide();
-                $("#showhere").hide();
-
-            });
-        });
-        $(document).ready(function () {
-            $("#hide_textbox").click(function () {
-                $("#text_note").hide();
-                $("#showhere").show();
-
-            });
-        });
-
-
-        function like_post(id) {
-
-            console.log(id);
-            $.ajax({
-                type: 'GET',
-                url: "{% url 'blog-like_post' %}",
-                data: { id: id },
-                success: function (data) {
-                    $("#likeicon_" + id).attr("src", "{% static 'blog/media/icon-like-blue.png' %}");
-                    $("#inactivebtn_" + id).attr("onclick", "");
-                    var oldcount = $("#likecount_" + id).text();
-                    var num = num = parseFloat(oldcount);
-                    num = num + 1;
-                    if (num > 1) {
-                        $("#likecount_" + id).text(num);
-                    } else {
-                        $("#likecount_" + id).text("1 Like");
-                    }
-
+        <div id="showhere" style="z-index: 1;">
+        </div>
+        <script>
+            function vlidatesearch() {
+                var searchterm = document.forms["search_form"]["searchterm"].value;
+                if (searchterm == null || searchterm == "" ||
+                    searchterm == undefined) {
+                    $("#PostHelpId").text("Please Enter Something To Post")
+                    return false;
                 }
-            });
-
-        }
-
-        function postfeed() {
-            var file = document.forms["feed_form"]["feed_image"].value;
-            var notes = document.forms["feed_form"]["notes"].value;
-            var files = $("#feed_image").val();
-            if ((notes == null || notes == "" || notes == undefined) && (files == undefined || files == null || files == "")) {
-                $("#PostHelpId").text("Please Enter Something To Post")
-                return false;
             }
-        }
+            // for image priview and  remove
+            function readURL(input) {
+                if (input.files && input.files[0]) {
+                    $("#deleteimagefeed").show();
+                    var reader = new FileReader();
 
+                    reader.onload = function (e) {
+                        $('#blah')
+                            .attr('src', e.target.result)
+                            .show()
+                            .width(40)
+                            .height(40);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            function resetFile() {
+                const file =
+                    document.querySelector('.feed_images');
+                file.value = '';
+                $('#blah').hide();
+                $("#deleteimagefeed").hide();
+            }
+            function resetFile2() {
+                const file =
+                    document.querySelector('.profile_pic');
+                file.value = '';
+                $('#blah').hide();
+                $("#deleteimagefeed").hide();
+            }
+            function readURL3(input) {
+                if (input.files && input.files[0]) {
+                    $("#cover-picture-save-button").show();
+                    $("#cancel-update-button").show();
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        console.log(e.target.result);
 
+                        $('#coverpicture').attr('src', e.target.result);
+                        //.width(40)
+                        //.height(40);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            } function readURL2(input) {
+                if (input.files && input.files[0]) {
+                    $("#profile-picture-save-button").show();
+                    $("#cancel-update-button2").show();
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        console.log(e.target.result);
 
+                        $('#profile-picture').attr('src', e.target.result);
+                        //.width(40)
+                        //.height(40);
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            //-------------------------------------------
 
-        function PostBlog() {
-            // var title = $('#title').val();
-            //   alert('notes');
-            var notes = $('#notes').val();
-            if (notes == null || notes == "" ||
-                notes == undefined ||
-                notes.length == 0) {
-                $("#PostHelpId").text("Please Enter Something To Post")
-                return false;
+            //   on focuse show rhe i post button 
+            $("#notes").focus(function () {
+                $("#notes").css("border", "1px solid #ccc");
+                $("#notes").css("min-height", "100px");
+                //  $("#notes").css("col", "5");
+                $("#postbtn").show();
+                $("#clearpostbtn").show();
+                $("#feeds_image").show();
+            });
+            // $("#notes").focusout(function () {
+            //     $("#postbtn").hide();
+            // });
+
+            function changefocus(id) {
+                // alert("chnagefocus");
+                $("#newcomment_" + id).focus();
             }
 
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-Save_notes' %}",
-                data: { 'notes': notes, 'type': "text" },
-                success: function (data) {
-                    $('#notes').val("");
-                    $("#newbody").html(data);
-                }
-            });
-        }
-        function logout() {
-            // alert("sharedto me");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-delete' %}",
-                success: function (data) {
-                    // alert(data);
-                    $("#newbody").html(data);
-                }
-            });
-        }
-
-        function likedby(id) {
-            console.log("here");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-likedby' %}",
-                data: { 'id': id, },
-                success: function (data) {
-                    $("#modal-container-list").html(data);
-                }
-            });
-        }
-        function CommentBy(id) {
-            // alert(id);
-            console.log("here");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-commentsby' %}",
-                data: { 'id': id, },
-                success: function (data) {
-                    // alert(data);
-                    $("#showcomments_" + id).html(data);
-                    $("#showcomments_" + id).show();
-                    $("#newcomment_" + id).focus();
+            function clearpost() {
+                $("#notes").val("");
+                $("#notes").css("border", "none");
+                $("#notes").css("min-height", "auto");
+                $("#postbtn").hide();
+                $("#clearpostbtn").hide();
+                $("#feeds_image").hide();
 
 
-                }
-            });
 
-        }
-        function savecomment(e) {
-            // var title = $('#title').val();
-            console.log("hello this is the comment save");
-            console.log(e);
-            var id = $(e).attr('id');
-            // var nw = ids.split("_");
-            // var id = nw[1];
-            $("#commentHelpId_" + id).text(" ");
-            var iserror = false;
-            var newcomment = $('#newcomment_' + id).val();
-            if (newcomment == null ||
-                newcomment == undefined ||
-                newcomment.length == 0) {
-                $("#commentHelpId_" + id).text("Please Write Something to Commment")
-                return false;
             }
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-comment_save' %}",
-                data: { 'id': id, 'newcomment': newcomment },
-                success: function (data) {
-                    // alert(data);
-                    $("#showcomments_" + id).html(data)
-                    $('#newcomment_' + id).val("");
-                    var oldcount = $("#commentcount_" + id).text();
-                    console.log(oldcount);
-                    var num = parseFloat(oldcount);
 
-                    num = num + 1;
-                    if (num > 1) {
-                        $("#commentcount_" + id).text(num);
-                    } else {
-                        $("#commentcount_" + id).text("1 Comment");
-                    }
-                }
+            $(document).ready(function () {
+                $("#disply_textbox").change(function () {
+                    $("#searchaterm").val();
+                });
             });
-        }
 
-        //function validate_search() {
-        //    var searchterm = document.forms["search_form"]["searchterm"].value;
-        //    if (searchterm == null ||
-        //        searchterm == undefined ||
-        //        searchterm.length == 0) {
-        //        $("#searchHelpId").text(" ")
-        //        // alert("Please Enter a valid Mobile Number\n");
-        //        return false;
-        //    }
-        //
-        //}
-        //
-        //        $(document).ready(function () {
-        //            $("#searchbutton").click(function () {
-        //
-        //                $.ajax({
-        //                    type: "GET",
-        //                    url: "{% url 'blog-SearchUser' %}",
-        //                    data: { 'searchTerm': searchTerm },
-        //                    success: function (data) {
-        //                        // alert(data);
-        //                        $("#searchresult").html(data);
-        //                    }
-        //                });
-        //            });
-        //        });
-
-        function userprofile(id) {
-            // alert(id);
-            console.log(id);
-            $.ajax({
-                type: "GET",
-                data: { 'id': id, },
-                success: function (data) {
-                    // alert(data);
+            $(document).ready(function () {
+                $("#disply_textbox").click(function () {
+                    $("#text_note").show();
                     $("#searchresult").hide();
-                    $("#mainbody").html(data);
-                }
+                    $("#showhere").hide();
+
+                });
+            });
+            $(document).ready(function () {
+                $("#hide_textbox").click(function () {
+                    $("#text_note").hide();
+                    $("#showhere").show();
+
+                });
             });
 
-        }
 
-        function closelist() {
-            $("#searchresult").hide();
-        }
+            function like_post(id) {
 
-        function showrequest() {
-            // alert("data");
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-conrequiestList' %}",
-                // data:{ 'id': id },
-                success: function (data) {
-                    // alert(data);
-                    // $("#searchresult").show();
-                    $("#mainbody").html(data);
+                console.log(id);
+                $.ajax({
+                    type: 'GET',
+                    url: "{% url 'blog-like_post' %}",
+                    data: { id: id },
+                    success: function (data) {
+                        $("#likeicon_" + id).attr("src", "{% static 'blog/media/icon-like-blue.png' %}");
+                        $("#inactivebtn_" + id).attr("onclick", "");
+                        var oldcount = $("#likecount_" + id).text();
+                        var num = num = parseFloat(oldcount);
+                        num = num + 1;
+                        if (num > 1) {
+                            $("#likecount_" + id).text(num);
+                        } else {
+                            $("#likecount_" + id).text("1 Like");
+                        }
+
+                    }
+                });
+
+            }
+
+            function postfeed() {
+                var file = document.forms["feed_form"]["feed_image"].value;
+                var notes = document.forms["feed_form"]["notes"].value;
+                var files = $("#feed_image").val();
+                if ((notes == null || notes == "" || notes == undefined) && (files == undefined || files == null || files == "")) {
+                    $("#PostHelpId").text("Please Enter Something To Post")
+                    return false;
                 }
-            });
-        }
+            }
 
 
-    </script>
-    <script>
-        function addfriend(id) {
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "PENDING", 'requested_by': id },
-                success: function (data) {
-                    $("#mydiv_" + id).focus();
-                    $("#suggestion_" + id).hide();
 
-                    iziToast.info({
-                        message: data,
-                        position: "topRight",
-                    });
+
+            function PostBlog() {
+                // var title = $('#title').val();
+                //   alert('notes');
+                var notes = $('#notes').val();
+                if (notes == null || notes == "" ||
+                    notes == undefined ||
+                    notes.length == 0) {
+                    $("#PostHelpId").text("Please Enter Something To Post")
+                    return false;
                 }
-            });
-        }
-        function unfriend(id) {
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "UNFRIEND", 'requested_by': id },
-                success: function (data) {
-                    $("#mydiv_" + id).focus();
-                    iziToast.info({
-                        position: topRight,
-                        message: data,
-                    });
-                }
-            });
-        }
 
-        function cancel_req(id) {
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-cancel_req' %}",
-                data: { 'requested_by': id },
-                success: function (data) {
-                    $("#mydiv_" + id).focus();
-                    iziToast.info({
-                        position: topRight,
-                        message: data,
-                    });
-                }
-            });
-        }
-        function accepted(id) {
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "ACCEPTED", 'requested_by': id },
-                success: function (data) {
-                    $("#mydiv_" + id).focus();
-                    iziToast.info({
-                        message: data,
-                        position: topRight,
-                    });
-                }
-            });
-        }
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-Save_notes' %}",
+                    data: { 'notes': notes, 'type': "text" },
+                    success: function (data) {
+                        $('#notes').val("");
+                        $("#newbody").html(data);
+                    }
+                });
+            }
+            function logout() {
+                // alert("sharedto me");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-delete' %}",
+                    success: function (data) {
+                        // alert(data);
+                        $("#newbody").html(data);
+                    }
+                });
+            }
 
-        function reject(id) {
-            // alert(id);
-            $.ajax({
-                type: "GET",
-                url: "{% url 'blog-accept_reject_request' %}",
-                data: { 'status': "REJECTED", 'requested_by': id },
-                success: function (data) {
-                    $("#mydiv_" + id).focus();
-                    iziToast.info({
-                        message: data,
-                        position: topRight,
-                    });
-                }
-            });
-        }
-    </script>
+            function likedby(id) {
+                console.log("here");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-likedby' %}",
+                    data: { 'id': id, },
+                    success: function (data) {
+                        $("#modal-container-list").html(data);
+                    }
+                });
+            }
+            function CommentBy(id) {
+                // alert(id);
+                console.log("here");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-commentsby' %}",
+                    data: { 'id': id, },
+                    success: function (data) {
+                        // alert(data);
+                        $("#showcomments_" + id).html(data);
+                        $("#showcomments_" + id).show();
+                        $("#newcomment_" + id).focus();
 
+
+                    }
+                });
+
+            }
+            function savecomment(e) {
+                // var title = $('#title').val();
+                console.log("hello this is the comment save");
+                console.log(e);
+                var id = $(e).attr('id');
+                // var nw = ids.split("_");
+                // var id = nw[1];
+                $("#commentHelpId_" + id).text(" ");
+                var iserror = false;
+                var newcomment = $('#newcomment_' + id).val();
+                if (newcomment == null ||
+                    newcomment == undefined ||
+                    newcomment.length == 0) {
+                    $("#commentHelpId_" + id).text("Please Write Something to Commment")
+                    return false;
+                }
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-comment_save' %}",
+                    data: { 'id': id, 'newcomment': newcomment },
+                    success: function (data) {
+                        // alert(data);
+                        $("#showcomments_" + id).html(data)
+                        $('#newcomment_' + id).val("");
+                        var oldcount = $("#commentcount_" + id).text();
+                        console.log(oldcount);
+                        var num = parseFloat(oldcount);
+
+                        num = num + 1;
+                        if (num > 1) {
+                            $("#commentcount_" + id).text(num);
+                        } else {
+                            $("#commentcount_" + id).text("1 Comment");
+                        }
+                    }
+                });
+            }
+
+            //function validate_search() {
+            //    var searchterm = document.forms["search_form"]["searchterm"].value;
+            //    if (searchterm == null ||
+            //        searchterm == undefined ||
+            //        searchterm.length == 0) {
+            //        $("#searchHelpId").text(" ")
+            //        // alert("Please Enter a valid Mobile Number\n");
+            //        return false;
+            //    }
+            //
+            //}
+            //
+            //        $(document).ready(function () {
+            //            $("#searchbutton").click(function () {
+            //
+            //                $.ajax({
+            //                    type: "GET",
+            //                    url: "{% url 'blog-SearchUser' %}",
+            //                    data: { 'searchTerm': searchTerm },
+            //                    success: function (data) {
+            //                        // alert(data);
+            //                        $("#searchresult").html(data);
+            //                    }
+            //                });
+            //            });
+            //        });
+
+            function userprofile(id) {
+                // alert(id);
+                console.log(id);
+                $.ajax({
+                    type: "GET",
+                    data: { 'id': id, },
+                    success: function (data) {
+                        // alert(data);
+                        $("#searchresult").hide();
+                        $("#mainbody").html(data);
+                    }
+                });
+
+            }
+
+            function closelist() {
+                $("#searchresult").hide();
+            }
+
+            function showrequest() {
+                // alert("data");
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-conrequiestList' %}",
+                    // data:{ 'id': id },
+                    success: function (data) {
+                        // alert(data);
+                        // $("#searchresult").show();
+                        $("#mainbody").html(data);
+                    }
+                });
+            }
+
+
+        </script>
+        <script>
+            function addfriend(id) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-accept_reject_request' %}",
+                    data: { 'status': "PENDING", 'requested_by': id },
+                    success: function (data) {
+                        $("#mydiv_" + id).focus();
+                        $("#suggestion_" + id).hide();
+
+                        iziToast.info({
+                            message: data,
+                            position: "topRight",
+                        });
+                    }
+                });
+            }
+            function unfriend(id) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-accept_reject_request' %}",
+                    data: { 'status': "UNFRIEND", 'requested_by': id },
+                    success: function (data) {
+                        $("#mydiv_" + id).focus();
+                        iziToast.info({
+                            position: topRight,
+                            message: data,
+                        });
+                    }
+                });
+            }
+
+            function cancel_req(id) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-cancel_req' %}",
+                    data: { 'requested_by': id },
+                    success: function (data) {
+                        $("#mydiv_" + id).focus();
+                        iziToast.info({
+                            position: topRight,
+                            message: data,
+                        });
+                    }
+                });
+            }
+            function accepted(id) {
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-accept_reject_request' %}",
+                    data: { 'status': "ACCEPTED", 'requested_by': id },
+                    success: function (data) {
+                        $("#mydiv_" + id).focus();
+                        iziToast.info({
+                            message: data,
+                            position: topRight,
+                        });
+                    }
+                });
+            }
+
+            function reject(id) {
+                // alert(id);
+                $.ajax({
+                    type: "GET",
+                    url: "{% url 'blog-accept_reject_request' %}",
+                    data: { 'status': "REJECTED", 'requested_by': id },
+                    success: function (data) {
+                        $("#mydiv_" + id).focus();
+                        iziToast.info({
+                            message: data,
+                            position: topRight,
+                        });
+                    }
+                });
+            }
+        </script>
+
+    </div>
 </body>
 
 </html>

@@ -39,8 +39,7 @@ class Posted_data(models.Model):
     # isilike = models.BooleanField(default=False)
     # updation_date = models.DateTimeField()
 
-    # def likes(self):
-    #     Li = like.objects
+    
 
 
 class Likes(models.Model):
@@ -50,7 +49,7 @@ class Likes(models.Model):
 
 
 class Comments(models.Model):
-    post = models.ForeignKey(Posted_data, on_delete=models.CASCADE)
+    post = models.ForeignKey(Posted_data, on_delete=models.CASCADE ,related_name='feed')
     comments_by = models.ForeignKey(User_data, on_delete=models.CASCADE)
     comment = models.TextField(max_length=None, blank=True)
     date_time = models.DateTimeField(default=timezone.now())

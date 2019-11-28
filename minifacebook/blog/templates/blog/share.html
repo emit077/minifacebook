@@ -31,7 +31,7 @@
                             Upload Image
                         </label>
                         <img id="blah" src="#" alt=" " class="p-0 ml-5" />
-                        <button class="btn btn-outline-light p-0 pl-1 pr-1"
+                        <button class="btn btn-outline-light p-0 pl-1 pr-1" type="button"
                             style=" color:#29487d ;border:solid lightgray 2px;display:none;" id="deleteimagefeed"
                             onclick="resetFile()">Delete</button>
                         <!-- <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button> -->
@@ -89,7 +89,6 @@
 
         </div>
         {% endif %}
-
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
@@ -183,6 +182,9 @@
             </div>
         </div>
         <div class="container" id="showcomments_{{pi.id}}">
+{% comment %} {% for item  in pi.feed.all()  %}
+{{item.comment}}
+{% endfor %} {% endcomment %}
         </div>
     </div>
 </article>
