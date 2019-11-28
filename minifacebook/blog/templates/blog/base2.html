@@ -85,16 +85,13 @@
                     </li>
                 </ul>
             </div>
-
         </nav>
         <!-- ----------------------------------body--------------------------------------------- -->
         <main role="main" class="container">
             <div class="row">
                 <div class="col-md-8 mt-2" id="mainbody">
-
                     {% block base2 %}
                     {% endblock base2 %}
-
                 </div>
                 <div class="col-md-4 mt-2">
                     <div class="content-section">
@@ -140,24 +137,24 @@
                         {% for item  in randomuser %}
                         <div id="suggestion_{{item.id}}" class="content-section m-0 pl-1 ">
                             <div class="row" style="matgin-top:auto">
-                                <div class="col-sm-8">
+                                <div class="col-8">
                                     <div class="media-body">
                                         <div class="media">
                                             {% if item.image %}
-                                            <img class="rounded-circle" src="{{ item.image.url }}"
+                                            <img class="rounded-circle mt-1" src="{{ item.image.url }}"
                                                 style="width: 25px;height: 25px;">
                                             {% endif %}
                                             <a class="ml-1 mt-1" href="{% url 'blog-userprofile' item.name item.id %}"
-                                                style="font-size: 0.8rem;">
-                                                {{ item.name}}
+                                                style="font-size: 1rem;">
+                                                <strong>{{ item.name}}</strong>
                                             </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-4 mt-1 text-right">
+                                <div class="col-4 mt-1 text-right">
                                     <button class="btn btn-primary suggetion p-1" style="font-size: 0.7rem;"
                                         onclick="addfriend({{item.id}})">
-                                        Add Friend
+                                        <img src="{% static 'blog/media/icon-add-user-16.png' %}" alt="">
                                     </button>
                                 </div>
                                 <br>

@@ -11,7 +11,7 @@
 <article class="media content-section ">
     <div class="media-body">
         <div class=" row">
-            <div class="col-1 mt-1">
+            <div class="col-1 mt-1 pl-1">
                 <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
                     style="width: 60px;height: 60px;">
             </div>
@@ -22,31 +22,47 @@
                     <textarea name="notes" id="notes" cols="" rows="1"
                         placeholder="What's on your mind , {{ request.session.name }}?"
                         style="border: none;font-size:1.2rem;width:100%"></textarea>
-
                     <fieldset class="form-group" id="feeds_image" style="display: none;">
-                        <input type="file" class="feed_images" name="feed_image" id="feed_image" style="display: none;"
-                            class="file btn btn-lg btn-outline-primary " style="width: 100%;" onchange="readURL(this);"
-                            hidden>
-                        <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
-                            Upload Image
-                        </label>
-                        <img id="blah" src="#" alt=" " class="p-0 ml-5" />
-                        <button class="btn btn-outline-light p-0 pl-1 pr-1" type="button"
-                            style=" color:#29487d ;border:solid lightgray 2px;display:none;" id="deleteimagefeed"
-                            onclick="resetFile()">Delete</button>
+                        <div class="row">
+                            <div class="col-3">
+                                <input type="file" class="feed_images" name="feed_image" id="feed_image"
+                                    style="display: none;" class="file btn btn-lg btn-outline-primary "
+                                    style="width: 100%;" onchange="readURL(this);" hidden>
+                                <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
+                                    <img src="{% static 'blog/media/icon-picture.png' %}" alt="">
+                                </label>
+                            </div>
+                            <div class="col-9">
+                                <img id="blah" src="#" alt=" " class="p-0 ml-5" />
+
+                                <button class="btn btn-outline-light p-0 pl-1 pr-1" type="button"
+                                    style=" color:#29487d ;border:solid lightgray 2px;display:none;"
+                                    id="deleteimagefeed" onclick="resetFile()">Delete
+                                </button>
+                            </div>
+
+                        </div>
                         <!-- <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button> -->
                     </fieldset>
-                    <div style="width:100%" class="">
-                        <button id="postbtn" type="submit " class="btn btn-primary text-left p-0 pl-5 pr-5"
-                            style=" display:none;">
-                            POST</button>
-                        <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
+                    <div class="row">
+                        <div class="col-12">
+                            <button id="postbtn" type="submit " class="btn btn-primary text-left"
+                                style=" display:none;">
+                                POST</button>
+
+                            <button id="clearpostbtn" type="button " class="btn btn-outline-light" onclick="clearpost()"
+                                style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
+                        </div>
+                    </div>
+
+                    <!-- <div style="width:100%" class="">
+
+                    </div> -->
+
+                    <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
                                 onclick="PostBlog()" style=" display:none;">
                                 POST</button> -->
-                        <button id="clearpostbtn" type="button " class="btn btn-outline-light p-0 pl-5 pr-5"
-                            onclick="clearpost()"
-                            style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
-                    </div>
+
                 </form>
             </div>
         </div>
@@ -172,19 +188,22 @@
         </div>
         <br>
         <div class="row text-left">
-            <div class="col-9 m-0">
+            <div class="col-10 m-0">
                 <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}" placeholder="Add Comment">
                 <small id="commentHelpId_{{pi.id}}" class="form-text" style="color: #ad3535;"></small>
 
             </div>
-            <div class="col-3 m-0 p-0">
-                <button id="{{pi.id}}" class="btn btn-outline-primary" onclick="savecomment(this)">Comment</button>
+            <div class="col-2 m-0 p-0">
+                <button id="{{pi.id}}" class="btn btn-outline-light" style="border:solid  #29487d 1px"
+                    onclick="savecomment(this)">
+                    <img src="{% static 'blog/media/icon-arrow.png' %}" alt="">
+                </button>
             </div>
         </div>
         <div class="container" id="showcomments_{{pi.id}}">
-{% comment %} {% for item  in pi.feed.all()  %}
-{{item.comment}}
-{% endfor %} {% endcomment %}
+            {% comment %} {% for item  in pi.feed.all()  %}
+            {{item.comment}}
+            {% endfor %} {% endcomment %}
         </div>
     </div>
 </article>

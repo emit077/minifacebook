@@ -9,7 +9,7 @@
 {{myrequestarr}} {% endcomment %}
 <div id="mydiv_{{item.id}}" class="content-section m-0 ">
     <div class="row" style="matgin-top:auto">
-        <div class="col-sm-8">
+        <div class="col-8">
             <div class="media-body">
                 <div class="media">
                     {% if item.image %}
@@ -25,30 +25,34 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4 mt-1 text-center">
+        <div class="col-4 mt-1 text-center">
             {% if item.id == request.session.userid %}
 
             {% else %}
-                {% if item.id in connected %}
-                    {% if item.id in friendarr %}
-                    {% comment %} {{ item.id}} {% endcomment %}
-                    <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.id}})">Unfriend</a>
-                    {% else %}
-                        {% if item.id in myrequestarr %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                        <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.id}})">Cancel Request</a>
-                        {% else %}
-                        {% comment %} {{ item.id}} {% endcomment %}
-                         <div class="form-group">
-                            <a href="" class="btn btn-outline-primary" onclick="accepted({{item.id}})">Accept</a>
-                            <a href="" class="btn btn-outline-warning" onclick="reject({{item.id}})">Reject</a>
-                        </div>
-                        {% endif %}
-                    {% endif %}
-                    {% else %}
-                     {% comment %} {{ item.id}} {% endcomment %}
-                     <a href="" class="btn btn-outline-primary" onclick="addfriend({{item.id}})">Add Friend</a>
-                {% endif %}
+            {% if item.id in connected %}
+            {% if item.id in friendarr %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.id}})">Unfriend</a>
+            {% else %}
+            {% if item.id in myrequestarr %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary" onclick="cancel_req({{item.id}})">Cancel Request</a>
+            {% else %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <div class="form-group">
+                <a href="" class="btn btn-primary" onclick="accepted({{item.id}})">
+                    <img src="{% static 'blog/media/icon-accept-24.png' %}" alt="">
+                </a>
+                <a href="" class="btn btn-danger" onclick="reject({{item.id}})">
+                    <img src="{% static 'blog/media/icon-x-24.png' %}" alt="">
+                </a>
+            </div>
+            {% endif %}
+            {% endif %}
+            {% else %}
+            {% comment %} {{ item.id}} {% endcomment %}
+            <a href="" class="btn btn-outline-primary" onclick="addfriend({{item.id}})">Add Friend</a>
+            {% endif %}
             {% endif %}
         </div>
         <br>

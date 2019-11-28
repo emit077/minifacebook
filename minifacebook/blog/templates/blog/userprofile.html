@@ -56,7 +56,7 @@
                 {% if request.session.userid == userprofile_data.id %}
                 <button type="button" class="btn btn-primary p-1 pl-2 pr-2" data-toggle="modal" data-target="#modelId2"
                     onclick="crearimage()">
-                    Edit Profile
+                    <img src="{% static 'blog/media/icon-edit-user-24.png' %}" alt="">Edit Profile
                 </button>
                 {% endif %}
 
@@ -65,29 +65,32 @@
                 {% if userprofile_data.id in connected %}
                 {% if userprofile_data.id in friendarr %}
                 {% comment %} {{ item.id}} {% endcomment %}
-                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
-                    onclick="unfriend({{userprofile_data.id}})">Unfriend</a>
+                <a href="" class="btn btn-primary  p-1 pl-2 pr-2" onclick="unfriend({{userprofile_data.id}})">
+                    <img src="{% static 'blog/media/icon-remove-user-24.png' %}" alt=""> Unfriend
+                </a>
                 {% else %}
                 {% if userprofile_data.id in myrequestarr %}
                 {% comment %} {{ item.id}} {% endcomment %}
-                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
-                    onclick="cancel_req({{userprofile_data.id}})">Cancel
-                    Request</a>
+                <a href="" class="btn btn-primary  p-1 pl-2 pr-2" onclick="cancel_req({{userprofile_data.id}})">
+                    <img src="{% static 'blog/media/icon-x-24.png' %}" alt="">Cancel Request
+                </a>
                 {% else %}
                 {% comment %} {{ item.id}} {% endcomment %}
                 <div class="form-group">
-                    <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
-                        onclick="accepted({{userprofile_data.id}})">Accept</a>
-                    <a href="" class="btn btn-outline-warning  p-1 pl-2 pr-2"
-                        onclick="reject({{userprofile_data.id}})">Reject</a>
+                    <a href="" class="btn btn-primary  p-1 pl-2 pr-2" onclick="accepted({{userprofile_data.id}})">
+                        <img src="{% static 'blog/media/icon-accept-24.png' %}" alt="">Accept
+                    </a>
+                    <a href="" class="btn btn-danger  p-1 pl-2 pr-2" onclick="reject({{userprofile_data.id}})">
+                        <img src="{% static 'blog/media/icon-x-24.png' %}" alt="">Reject
+                    </a>
                 </div>
                 {% endif %}
                 {% endif %}
                 {% else %}
                 {% comment %} {{ item.id}} {% endcomment %}
-                <a href="" class="btn btn-outline-primary  p-1 pl-2 pr-2"
-                    onclick="addfriend({{userprofile_data.id}})">Add
-                    Friend</a>
+                <a href="" class="btn btn-primary  p-1 pl-2 pr-2" onclick="addfriend({{userprofile_data.id}})">
+                    <img src="{% static 'blog/media/icon-add-user-24.png' %}" alt=""> Add Friend
+                </a>
                 {% endif %}
                 {% endif %}
             </div>
@@ -274,7 +277,7 @@
 <article class="media content-section ">
     <div class="media-body">
         <div class=" row">
-            <div class="col-1">
+            <div class="col-1 mt-1 pl-1">
                 <img class="rounded-circle account-img" src="{{ profile_data.image.url }}"
                     style="width: 60px;height: 60px;">
             </div>
@@ -285,31 +288,47 @@
                     <textarea name="notes" id="notes" cols="" rows="1"
                         placeholder="What's on your mind , {{ request.session.name }}?"
                         style="border: none;font-size:1.2rem;width:100%"></textarea>
-
                     <fieldset class="form-group" id="feeds_image" style="display: none;">
-                        <input type="file" class="feed_images" name="feed_image" id="feed_image" style="display: none;"
-                            class="file btn btn-lg btn-outline-primary " style="width: 100%;" onchange="readURL(this);"
-                            hidden>
-                        <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
-                            Photo
-                        </label>
-                        <img id="blah" src="#" alt=" " class="p-0 ml-5" />
-                        <button class="btn btn-outline-light p-0 pl-1 pr-1"
-                            style=" color:#29487d ;border:solid lightgray 2px;display:none;" id="deleteimagefeed"
-                            onclick="resetFile()">Delete</button>
+                        <div class="row">
+                            <div class="col-3">
+                                <input type="file" class="feed_images" name="feed_image" id="feed_image"
+                                    style="display: none;" class="file btn btn-lg btn-outline-primary "
+                                    style="width: 100%;" onchange="readURL(this);" hidden>
+                                <label for="feed_image" class="btn btn-primary p-0 pl-3 pr-3 mt-1">
+                                    <img src="{% static 'blog/media/icon-picture.png' %}" alt="">
+                                </label>
+                            </div>
+                            <div class="col-9">
+                                <img id="blah" src="#" alt=" " class="p-0 ml-5" />
+
+                                <button class="btn btn-outline-light p-0 pl-1 pr-1" type="button"
+                                    style=" color:#29487d ;border:solid lightgray 2px;display:none;"
+                                    id="deleteimagefeed" onclick="resetFile()">Delete
+                                </button>
+                            </div>
+
+                        </div>
                         <!-- <button class="btn btn-outline-primary" type="submit" onclick="saveimages()">Update</button> -->
                     </fieldset>
-                    <div style="width:100%" class="">
-                        <button id="postbtn" type="submit " class="btn btn-primary text-left p-0 pl-5 pr-5"
-                            style=" display:none;">
-                            POST</button>
-                        <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
-                                onclick="PostBlog()" style=" display:none;">
-                                POST</button> -->
-                        <button id="clearpostbtn" type="button " class="btn btn-outline-light p-0 pl-5 pr-5"
-                            onclick="clearpost()"
-                            style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
+                    <div class="row">
+                        <div class="col-12">
+                            <button id="postbtn" type="submit " class="btn btn-primary text-left"
+                                style=" display:none;">
+                                POST</button>
+
+                            <button id="clearpostbtn" type="button " class="btn btn-outline-light" onclick="clearpost()"
+                                style=" display:none; color:#29487d ;border:solid lightgray 2px">Cancel</button>
+                        </div>
                     </div>
+
+                    <!-- <div style="width:100%" class="">
+    
+                        </div> -->
+
+                    <!-- <button id="postbtn" type="button " class="btn btn-outline-primary text-left p-0 pl-5 pr-5"
+                                    onclick="PostBlog()" style=" display:none;">
+                                    POST</button> -->
+
                 </form>
             </div>
         </div>
@@ -351,7 +370,6 @@
 
         </div>
         {% endif %}
-
         <div class="container mt-0 pt-0">
             <div class=" row text-muted mt-0 pt-0">
                 <div class="col-sm-6 text-left text-muted mt-0 pt-0">
@@ -389,9 +407,9 @@
                     </button>
                 </div>
                 <!-- <div class="col-sm-6 text-right">
-                    <button class="btn" href="#" style="font-size:10px;"
-                        onclick="CommentBy({{pi.id}})">{{pi.comments_count}} Comment</button>
-                </div> -->
+                        <button class="btn" href="#" style="font-size:10px;"
+                            onclick="CommentBy({{pi.id}})">{{pi.comments_count}} Comment</button>
+                    </div> -->
             </div>
             <div class=" row text-center">
                 <div class="col-6" id="">
@@ -435,16 +453,22 @@
         </div>
         <br>
         <div class="row text-left">
-            <div class="col-9 m-0">
+            <div class="col-10 m-0">
                 <input class="form-control mr-sm-2" type="text" id="newcomment_{{pi.id}}" placeholder="Add Comment">
                 <small id="commentHelpId_{{pi.id}}" class="form-text" style="color: #ad3535;"></small>
 
             </div>
-            <div class="col-3 m-0 p-0">
-                <button id="{{pi.id}}" class="btn btn-outline-primary" onclick="savecomment(this)">Comment</button>
+            <div class="col-2 m-0 p-0">
+                <button id="{{pi.id}}" class="btn btn-outline-light" style="border:solid  #29487d 1px"
+                    onclick="savecomment(this)">
+                    <img src="{% static 'blog/media/icon-arrow.png' %}" alt="">
+                </button>
             </div>
         </div>
         <div class="container" id="showcomments_{{pi.id}}">
+            {% comment %} {% for item  in pi.feed.all()  %}
+            {{item.comment}}
+            {% endfor %} {% endcomment %}
         </div>
     </div>
 </article>

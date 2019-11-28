@@ -9,31 +9,33 @@
 {{myrequestarr}} {% endcomment %}
 <div id="mydiv_{{item.id}}" class="content-section m-0 ">
     <div class="row" style="matgin-top:auto">
-        <div class="col-sm-8">
+        <div class="col-8">
             <div class="media-body">
                 <div class="media">
                     {% if item.image %}
-                    <img class="rounded-circle" src="{{ item.image.url }}" style="width: 50px;height: 50px;">
+                    <img class="rounded-circle mt-1" src="{{ item.image.url }}" style="width: 30px;height: 30px;">
                     {% else %}
                     <img class="rounded-circle" src="{% static 'blog/media/pc.jpg' %}"
                         style="width: 50px;height: 50px;">
                     {% endif %}
                     <a class="ml-3 mt-2" href="{% url 'blog-userprofile' item.name item.id %}"
-                        style="font-size: 1.5rem;">
-                        {{ item.name}}
+                        style="font-size: 1rem;">
+                        <strong>{{ item.name}}</strong>
                     </a>
                 </div>
             </div>
         </div>
 
-        <div class="col-sm-4 mt-1 text-center">
+        <div class="col-4 mt-1 text-center">
             {% if item.id == request.session.userid %}
 
             {% else %}
                 {% if item.id in connected %}
                     {% if item.id in friendarr %}
                     {% comment %} {{ item.id}} {% endcomment %}
-                    <a href="" class="btn btn-outline-primary" onclick="unfriend({{item.id}})">Unfriend</a>
+                    <a href="" class="btn btn-primary" onclick="unfriend({{item.id}})">
+                       <img src="{% static 'blog/media/icon-remove-user-24.png' %}" alt="">
+                    </a>
                     {% else %}
                         {% if item.id in myrequestarr %}
                         {% comment %} {{ item.id}} {% endcomment %}

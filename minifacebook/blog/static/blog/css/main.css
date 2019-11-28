@@ -138,6 +138,7 @@ btn {
 }
 
 
+
 /* ==========================================================================
    Author's custom styles
    ========================================================================== */
@@ -149,7 +150,7 @@ body {
 .fb-profile img.fb-image-lg {
   z-index: 0;
   width: 100%;
-  height: 250px;
+  height: 150px;
   margin-bottom: 10px;
 }
 
@@ -247,3 +248,9 @@ body {
 }
 
 /* lodeer end  */
+@media only screen and (max-width: 200px) {
+  .btn {
+    padding: 1px;
+    color: red;
+  }
+}
